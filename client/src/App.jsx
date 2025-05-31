@@ -19,11 +19,8 @@ import UnauthPage from "./pages/UnauthPage/UnauthPage";
 
 
 function App() {
-  const isAuthenticated = true;
-  const user = {
-    name: "Sanket",
-    role: "admin",
-  };
+  const isAuthenticated = false;
+  const user = null;
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
@@ -60,4 +57,4 @@ function App() {
 
 export default App
 
-// 1.19.06
+// 1.37.56
