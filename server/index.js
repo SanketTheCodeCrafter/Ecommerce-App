@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+import AuthRoutes from './routes/AuthRoutes.js';
 
 
 dotenv.config();
@@ -38,7 +39,10 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 
-
+app.use('/api/auth', AuthRoutes);
+app.get('/', (req, res) => {
+    res.send('Welcome to the E-commerce API');
+});
 
 app.listen(PORT, ()=>{
     console.log(`Server running on port ${PORT}`);
