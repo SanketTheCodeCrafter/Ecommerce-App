@@ -1,45 +1,32 @@
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Routes } from "react-router-dom"
+import { Route } from "react-router-dom";
+import AuthLayout from "./components/Auth/AuthLayout";
+import AuthLogin from "./pages/Auth/AuthLogin";
+import AuthRegister from "./pages/Auth/AuthRegister";
+import AdminLayout from "./components/AdminView/AdminLayout";
+import Dashboard from "./pages/AdminView/Dashboard";
+import Features from "./pages/AdminView/Features";
+import Orders from "./pages/AdminView/Orders";
+import Products from "./pages/AdminView/Products";
+
 
 function App() {
   return (
-    <>
-      {/* Hero Section */}
-      <div className="flex min-h-svh flex-col items-center justify-center p-8">
-        <Button className="px-6 py-2 hover:scale-105 transition-transform">
-          Click me
-        </Button>
-      </div>
+     <div className="flex flex-col overflow-hidden bg-white">
 
-      {/* Card Section */}
-      <div className="max-w-md mx-auto p-6">
-        <Card className="shadow-lg">
-          <CardHeader className="space-y-2">
-            <CardTitle className="text-2xl font-bold">Card Title</CardTitle>
-            <CardDescription className="text-gray-600">
-              Card Description
-            </CardDescription>
-            <CardAction>Card Action</CardAction>
-          </CardHeader>
-          <CardContent className="py-4">
-            <p>Card Content</p>
-          </CardContent>
-          <CardFooter className="bg-gray-50">
-            <p>Card Footer</p>
-          </CardFooter>
-        </Card>
-      </div>
-    </>
-
-    //34.56
+      <Routes>
+        <Route path='/auth' element={<AuthLayout />}>
+          <Route path="login" element={<AuthLogin />} />
+          <Route path="register" element={<AuthRegister />} />
+        </Route>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="dashboard" element={<Dashboard />}/>
+          <Route path="features" element={<Features />}/>
+          <Route path="orders" element={<Orders />}/>
+          <Route path="products" element={<Products />}/>
+        </Route>
+      </Routes>
+     </div>
   )
 }
 
