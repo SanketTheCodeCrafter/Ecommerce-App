@@ -8,6 +8,12 @@ import Dashboard from "./pages/AdminView/Dashboard";
 import Features from "./pages/AdminView/Features";
 import Orders from "./pages/AdminView/Orders";
 import Products from "./pages/AdminView/Products";
+import ShopLayout from "./components/ShoppingView/ShopLayout";
+import NotFound from "./pages/NotFound/NotFound";
+import Account from "./pages/ShoppingView/Account";
+import CheckOut from "./pages/ShoppingView/CheckOut";
+import Home from "./pages/ShoppingView/Home";
+import Listing from "./pages/ShoppingView/Listing";
 
 
 function App() {
@@ -25,6 +31,13 @@ function App() {
           <Route path="orders" element={<Orders />}/>
           <Route path="products" element={<Products />}/>
         </Route>
+        <Route path="/shop" element={<ShopLayout />}>
+            <Route path="account" element={<Account />}/>
+            <Route path="checkout" element={<CheckOut />}/>
+            <Route path="home" element={<Home />}/>
+            <Route path="listing" element={<Listing />}/>
+        </Route>
+        <Route path="*" element={<NotFound />}></Route>
       </Routes>
      </div>
   )
