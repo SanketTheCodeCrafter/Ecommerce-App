@@ -14,33 +14,50 @@ import Account from "./pages/ShoppingView/Account";
 import CheckOut from "./pages/ShoppingView/CheckOut";
 import Home from "./pages/ShoppingView/Home";
 import Listing from "./pages/ShoppingView/Listing";
+import CheckAuth from "./components/CommonCompo/CheckAuth";
+import UnauthPage from "./pages/UnauthPage/UnauthPage";
 
 
 function App() {
+  const isAuthenticated = true;
+  const user = {
+    name: "Sanket",
+    role: "admin",
+  };
+
   return (
-     <div className="flex flex-col overflow-hidden bg-white">
+    <div className="flex flex-col overflow-hidden bg-white">
 
       <Routes>
-        <Route path='/auth' element={<AuthLayout />}>
+        <Route path='/auth' element={<CheckAuth isAuthenticated={isAuthenticated} user={user} >
+          <AuthLayout />
+        </CheckAuth>}>
           <Route path="login" element={<AuthLogin />} />
           <Route path="register" element={<AuthRegister />} />
         </Route>
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route path="dashboard" element={<Dashboard />}/>
-          <Route path="features" element={<Features />}/>
-          <Route path="orders" element={<Orders />}/>
-          <Route path="products" element={<Products />}/>
+        <Route path="/admin" element={<CheckAuth isAuthenticated={isAuthenticated} user={user} >
+          <AdminLayout />
+        </CheckAuth>}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="features" element={<Features />} />
+          <Route path="orders" element={<Orders />} />
+          <Route path="products" element={<Products />} />
         </Route>
-        <Route path="/shop" element={<ShopLayout />}>
-            <Route path="account" element={<Account />}/>
-            <Route path="checkout" element={<CheckOut />}/>
-            <Route path="home" element={<Home />}/>
-            <Route path="listing" element={<Listing />}/>
+        <Route path="/shop" element={<CheckAuth isAuthenticated={isAuthenticated} user={user} >
+          <ShopLayout />
+        </CheckAuth>}>
+          <Route path="account" element={<Account />} />
+          <Route path="checkout" element={<CheckOut />} />
+          <Route path="home" element={<Home />} />
+          <Route path="listing" element={<Listing />} />
         </Route>
         <Route path="*" element={<NotFound />}></Route>
+        <Route path="/unauth-page" element={<UnauthPage />}></Route>
       </Routes>
-     </div>
+    </div>
   )
 }
 
 export default App
+
+// 1.19.06
