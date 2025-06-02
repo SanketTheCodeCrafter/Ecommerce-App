@@ -22,7 +22,7 @@ mongoose.connect("mongodb+srv://Sanket:Ecommerce@ecommerce.2hoo8jz.mongodb.net/"
 
 app.use(
     cors({
-        origin: 'https://localhost: 5173/',
+        origin: 'http://localhost:5173',
         methods: ['GET', 'POST', 'DELETE', 'PUT'],
         allowedHeaders: [
             "Content-Type",

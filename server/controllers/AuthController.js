@@ -16,12 +16,14 @@ export const registerUser = async (req, res)=>{
     try {
         await newUser.save();
         res.status(201).json({
+            success: true,
             message: "User registered successfully",
             user: newUser,
         })
     } catch (error) {
         console.log("Error in registering user:", error);
         res.status(500).json({
+            success: false,
             message: "Internal server error",
             error: error.message,
         });

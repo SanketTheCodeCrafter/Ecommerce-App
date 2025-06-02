@@ -1,10 +1,12 @@
 import Form from '@/components/CommonCompo/Form';
 import { registerFormControls } from '@/config/registerFormControls';
+import { registerUser } from '@/store/auth-slice';
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 
 
-const initialState= {
+const initialState = {
   userName: '',
   email: '',
   password: '',
@@ -12,9 +14,23 @@ const initialState= {
 
 const AuthRegister = () => {
   const [formData, setFormData] = useState(initialState);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  function onSubmit(e){
+  function onSubmit(e) {
+    e.preventDefault();
+    dispatch(registerUser(formData))
+      .unwrap()
+      .then((response) => {
+        console.log('Registration successful:', response);
+        if (response?.success) {
+          navigate('/auth/login');
+        }
 
+      })
+      .catch((error) => {
+        console.error('Registration failed:', error);
+      });
   }
 
 
@@ -27,13 +43,13 @@ const AuthRegister = () => {
         <p className='mt-2'>
           Already have an account
         </p>
-        <Link className='font-medium ml-2 text-primary hover:underline' 
+        <Link className='font-medium ml-2 text-primary hover:underline'
           to={'/auth/login'}>
           Login
         </Link>
       </div>
 
-      <Form 
+      <Form
         formControls={registerFormControls}
         buttonText={"Sign Up"}
         formData={formData}
