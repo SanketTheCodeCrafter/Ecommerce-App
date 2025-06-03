@@ -4,6 +4,8 @@ import { registerUser } from '@/store/auth-slice';
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+
 
 
 const initialState = {
@@ -22,6 +24,7 @@ const AuthRegister = () => {
     dispatch(registerUser(formData))
       .unwrap()
       .then((response) => {
+        toast.success('Registration successful!')
         console.log('Registration successful:', response);
         if (response?.success) {
           navigate('/auth/login');
@@ -29,6 +32,7 @@ const AuthRegister = () => {
 
       })
       .catch((error) => {
+        toast.error(error?.message || 'Registration failed');
         console.error('Registration failed:', error);
       });
   }
