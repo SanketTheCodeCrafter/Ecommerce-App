@@ -73,3 +73,39 @@ export const loginUser = async (req, res) =>{
         })
     }
 }
+
+export const logoutUser = async (req, res)=>{
+    try{
+        res.clearCookie('token');
+        res.json({
+            success: true,
+            message: "Logged out successfully!"
+        })
+    }catch(error){
+        console.log("Error in logging out user:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message,
+        })
+    }
+}
+
+export const authMiddleware = (req, res, next)=>{
+    const token = req.cookies.token;
+    if(!token) return res.status(401).json({
+        success: false,
+        message: "Unauthorized! Please login first"
+    })
+
+    try {
+        const decoded = jwt.verify(token, "JWT_SECRET_KEY");
+        req.user = decoded;
+        next();
+    } catch (error) {
+        res.status(401).json({
+        success: false,
+        message: "Unauthorized! Please login first"
+    })
+    }
+}

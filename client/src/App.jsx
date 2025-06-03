@@ -16,11 +16,26 @@ import Home from "./pages/ShoppingView/Home";
 import Listing from "./pages/ShoppingView/Listing";
 import CheckAuth from "./components/CommonCompo/CheckAuth";
 import UnauthPage from "./pages/UnauthPage/UnauthPage";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { checkAuth } from "./store/auth-slice";
 
 
 function App() {
-  const {isAuthenticated, user} = useSelector((state) => state.auth);
+  const {isAuthenticated, user, isLoading} = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  useEffect(()=>{
+    dispatch(checkAuth());
+  }, [dispatch])
+
+  if(isLoading){
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
