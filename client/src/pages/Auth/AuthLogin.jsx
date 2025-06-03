@@ -1,7 +1,10 @@
 import Form from '@/components/CommonCompo/Form';
 import { loginFormControls, registerFormControls } from '@/config/registerFormControls';
+import { loginUser } from '@/store/auth-slice';
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 
 const initialState= {
@@ -11,9 +14,21 @@ const initialState= {
 
 const AuthLogin = () => {
   const [formData, setFormData] = useState(initialState);
+  const dispatch= useDispatch();
 
   function onSubmit(e){
+    e.preventDefault();
 
+    dispatch(loginUser(formData)).then((data)=>{
+      if(data?.payload?.success){
+        toast.success('Login successful!');
+        console.log('Login successful:', data.payload);
+      }else{
+        toast.error(data?.payload?.message || 'Login failed');
+        console.error('Login failed:', data.payload);
+      }
+      
+    })
   }
 
 

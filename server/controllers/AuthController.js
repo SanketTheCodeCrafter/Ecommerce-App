@@ -29,3 +29,47 @@ export const registerUser = async (req, res)=>{
         });
     }
 }
+
+export const loginUser = async (req, res) =>{
+    const {email, password}=req.body;
+
+
+    try {
+        const checkUser= await User.findOne({email});
+        if(!checkUser) return res.json({
+            success: false,
+            message: "User doesn't exists! Please register first"
+        })
+        
+        const checkedPassword =  bcrypt.compareSync(password, checkUser.password);
+        if(!checkedPassword) return res.json({
+            success: false,
+            message: "Incorrect password!"
+        })
+
+        const token = jwt.sign({
+            id: checkUser._id,
+            role: checkUser.role,
+            email: checkUser.email
+        }, "JWT_SECRET_KEY", {
+            expiresIn: '1hr'
+        })
+
+        res.cookie('token', token, {httpOnly: true, secure: false});
+        res.json({
+            success: true,
+            message: "Logged in successfully!",
+            user: {
+                email: checkUser.email,
+                role: checkUser.role,
+                id: checkUser._id
+            }
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Some error occured",
+        })
+    }
+}

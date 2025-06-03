@@ -16,11 +16,11 @@ import Home from "./pages/ShoppingView/Home";
 import Listing from "./pages/ShoppingView/Listing";
 import CheckAuth from "./components/CommonCompo/CheckAuth";
 import UnauthPage from "./pages/UnauthPage/UnauthPage";
+import { useSelector } from "react-redux";
 
 
 function App() {
-  const isAuthenticated = false;
-  const user = null;
+  const {isAuthenticated, user} = useSelector((state) => state.auth);
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
@@ -57,4 +57,4 @@ function App() {
 
 export default App
 
-// 1.37.56
+// 2.33.53
