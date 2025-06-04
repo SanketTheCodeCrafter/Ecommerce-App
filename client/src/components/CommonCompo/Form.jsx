@@ -53,11 +53,13 @@ const Form = ({
                             <SelectValue placeholder={getControlItem.placeholder} />
                         </SelectTrigger>
                         <SelectContent>
-                            {getControlItem.options && getControlItem.options.length > 0 ? getControlItem.map((option) => (
-                                <SelectItem key={option.id} value={option.id}>
-                                    {option.label}
-                                </SelectItem>
-                            )) : null}
+                            {getControlItem.options && getControlItem.options.length > 0
+                                ? getControlItem.options.map((option) => (
+                                    <SelectItem key={option.id} value={option.id}>
+                                        {option.label}
+                                    </SelectItem>
+                                ))
+                                : null}
                         </SelectContent>
                     </Select>
                 )
@@ -115,7 +117,7 @@ const Form = ({
                 ))}
             </div>
 
-            <Button disabled={isBtnDisabled} type= "submit" className={"mt-2 w-full"}>
+            <Button disabled={isBtnDisabled} type="submit" className={"mt-2 w-full"}>
                 {buttonText || "Submit"}
             </Button>
         </form>
