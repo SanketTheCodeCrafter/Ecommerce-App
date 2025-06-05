@@ -45,27 +45,32 @@ const ProductImageUpload = ({
     }
 
     async function uploadImageToCloudinary() {
-    setImageLoadingState(true);
-    try {
-        const data = new FormData();
-        data.append('my_file', imageFile);
-        const response = await axios.post("http://localhost:5000/api/admin/products/upload-image", data);
+        setImageLoadingState(true);
+        try {
+            const data = new FormData();
+            data.append('my_file', imageFile);
+            const response = await axios.post("http://localhost:5000/api/admin/products/upload-image", data);
 
-        if (response.data.success && response.data.url) {
-            setUploadedImageUrl(response.data.url);
+            console.log("Cloudinary upload response:", response.data);
+
+            if (response.data.success && response.data.url) {
+                setUploadedImageUrl(response.data.url);
+            } else {
+                setUploadedImageUrl('');
+                toast.error("Image upload failed: No URL returned.");
+            }
+        } catch (error) {
+            setUploadedImageUrl('');
+            setImageFile(null);
+            toast.error("Image upload failed. Please try again.")
+            console.error("Image upload failed", error);
+        } finally {
+            setImageLoadingState(false);
         }
-    } catch (error) {
-        setUploadedImageUrl('');
-        setImageFile(null);
-        toast.error("Image upload failed. Please try again.")
-        console.error("Image upload failed", error);
-    } finally {
-        setImageLoadingState(false);
     }
-}
 
-    useEffect(()=>{
-        if(imageFile !== null && imageFile !== undefined) uploadImageToCloudinary()
+    useEffect(() => {
+        if (imageFile !== null && imageFile !== undefined) uploadImageToCloudinary()
     }, [imageFile])
 
     return (

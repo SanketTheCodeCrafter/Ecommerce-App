@@ -41,10 +41,6 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use('/api/auth', AuthRoutes);
-app.use('/', (req, res) => {
-    res.send('Welcome to the E-commerce API');
-});
-
 app.use('/api/admin/products', adminProductsRouter);
 
 app.listen(PORT, ()=>{
