@@ -1,16 +1,19 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { FileIcon, UploadCloudIcon, XIcon } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from '../ui/button';
+import axios from 'axios';
+import { toast } from 'sonner';
 
 const ProductImageUpload = ({
     imageFile,
     setImageFile,
     uploadedImageUrl,
     setUploadedImageUrl,
-    imageLoadingState
+    imageLoadingState,
+    setImageLoadingState
 }) => {
 
     const inputRef = useRef(null);
@@ -41,7 +44,29 @@ const ProductImageUpload = ({
         }
     }
 
+    async function uploadImageToCloudinary() {
+    setImageLoadingState(true);
+    try {
+        const data = new FormData();
+        data.append('my_file', imageFile);
+        const response = await axios.post("http://localhost:5000/api/admin/products/upload-image", data);
 
+        if (response.data.success && response.data.url) {
+            setUploadedImageUrl(response.data.url);
+        }
+    } catch (error) {
+        setUploadedImageUrl('');
+        setImageFile(null);
+        toast.error("Image upload failed. Please try again.")
+        console.error("Image upload failed", error);
+    } finally {
+        setImageLoadingState(false);
+    }
+}
+
+    useEffect(()=>{
+        if(imageFile !== null && imageFile !== undefined) uploadImageToCloudinary()
+    }, [imageFile])
 
     return (
         <div>

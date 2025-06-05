@@ -4,6 +4,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import AuthRoutes from './routes/AuthRoutes.js';
+import adminProductsRouter from './routes/admin/products-routes.js'
 
 
 dotenv.config();
@@ -40,13 +41,14 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use('/api/auth', AuthRoutes);
-app.get('/', (req, res) => {
+app.use('/', (req, res) => {
     res.send('Welcome to the E-commerce API');
 });
+
+app.use('/api/admin/products', adminProductsRouter);
 
 app.listen(PORT, ()=>{
     console.log(`Server running on port ${PORT}`);
 })
 
 
-//26.22
