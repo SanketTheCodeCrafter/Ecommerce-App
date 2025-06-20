@@ -1,3 +1,4 @@
+import AdminProductTile from '@/components/AdminView/AdminProductTile';
 import ProductImageUpload from '@/components/AdminView/ProductImageUpload';
 import Form from '@/components/CommonCompo/Form';
 import { Button } from '@/components/ui/button';
@@ -25,6 +26,7 @@ const Products = () => {
   const [imageFile, setImageFile] = useState(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState('');
   const [imageLoadingState, setImageLoadingState] = useState(false);
+  const [currentEditedId, setCurrentEditedId] = useState(null);
 
   const dispatch = useDispatch();
   const { productList } = useSelector((state) => state.adminProductsSlice);
@@ -34,10 +36,10 @@ const Products = () => {
     dispatch(addNewProduct({
       ...formData,
       image: uploadedImageUrl,
-    })).then((data)=>{
+    })).then((data) => {
       console.log(data)
 
-      if(data?.payload?.success){
+      if (data?.payload?.success) {
         dispatch(fetchAllProducts());
         setOpenCreateProductsDialog(false);
         setImageFile(null);
@@ -64,39 +66,52 @@ const Products = () => {
           Add New Product
         </Button>
       </div>
+
+      <Sheet
+        open={openCreateProductsDialog}
+        onOpenChange={() => {
+          setOpenCreateProductsDialog(false);
+          setFormData(initialFormData);
+          setCurrentEditedId(null);
+          setFormData(initialFormData)
+        }}
+      >
+        <SheetContent side='right' className={'overflow-auto p-6'}>
+          <SheetHeader>
+            <SheetTitle>
+              {currentEditedId !== null ? 'Edit Product' : 'Add New Product'}
+            </SheetTitle>
+          </SheetHeader>
+
+          <ProductImageUpload
+            imageFile={imageFile}
+            setImageFile={setImageFile}
+            uploadedImageUrl={uploadedImageUrl}
+            setUploadedImageUrl={setUploadedImageUrl}
+            imageLoadingState={imageLoadingState}
+            setImageLoadingState={setImageLoadingState}
+            isEditMode={currentEditedId !== null}
+          />
+
+          <Form
+            formControls={addProductFormElements}
+            formData={formData}
+            setFormData={setFormData}
+            buttonText={ currentEditedId !== null ? 'Edit Product' : 'Add Product'}
+            onSubmit={onSubmit}
+          />
+        </SheetContent>
+      </Sheet>
       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
-        <Sheet
-          open={openCreateProductsDialog}
-          onOpenChange={() => {
-            setOpenCreateProductsDialog(false);
-            setFormData(initialFormData);
-          }}
-        >
-          <SheetContent side='right' className={'overflow-auto p-6'}>
-            <SheetHeader>
-              <SheetTitle>
-                Add New Product
-              </SheetTitle>
-            </SheetHeader>
-
-            <ProductImageUpload
-              imageFile={imageFile}
-              setImageFile={setImageFile}
-              uploadedImageUrl={uploadedImageUrl}
-              setUploadedImageUrl={setUploadedImageUrl}
-              imageLoadingState={imageLoadingState}
-              setImageLoadingState={setImageLoadingState}
-            />
-
-            <Form
-              formControls={addProductFormElements}
-              formData={formData}
-              setFormData={setFormData}
-              buttonText={'Add Product'}
-              onSubmit={onSubmit}
-            />
-          </SheetContent>
-        </Sheet>
+        {
+          productList && productList.length > 0 ?
+            productList.map(productItem =>
+              <AdminProductTile
+                setFormData={setFormData}
+                setOpenCreateProductsDialog={setOpenCreateProductsDialog}
+                setCurrentEditedId={setCurrentEditedId}
+                product={productItem} />) : null
+        }
       </div>
     </Fragment>
   )
