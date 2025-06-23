@@ -51,11 +51,11 @@ export const loginUser = async (req, res) =>{
             id: checkUser._id,
             role: checkUser.role,
             email: checkUser.email
-        }, "JWT_SECRET_KEY", {
+        }, process.env.JWT_SECRET, {
             expiresIn: '1hr'
         })
 
-        res.cookie('token', token, {httpOnly: true, secure: false});
+        res.cookie('token', token, {httpOnly: true, secure: false, path: '/', sameSite: 'lax'});
         res.json({
             success: true,
             message: "Logged in successfully!",
@@ -76,7 +76,7 @@ export const loginUser = async (req, res) =>{
 
 export const logoutUser = async (req, res)=>{
     try{
-        res.clearCookie('token');
+        res.clearCookie('token', { httpOnly: true, secure: false, path: '/', sameSite: 'lax'});
         res.json({
             success: true,
             message: "Logged out successfully!"
@@ -99,7 +99,7 @@ export const authMiddleware = (req, res, next)=>{
     })
 
     try {
-        const decoded = jwt.verify(token, "JWT_SECRET_KEY");
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
         next();
     } catch (error) {
