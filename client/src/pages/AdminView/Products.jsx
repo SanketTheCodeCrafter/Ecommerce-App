@@ -4,10 +4,11 @@ import Form from '@/components/CommonCompo/Form';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { addProductFormElements } from '@/config/registerFormControls';
-import { addNewProduct, editProduct, fetchAllProducts } from '@/store/admin/products-slic';
+import { addNewProduct, deleteProduct, editProduct, fetchAllProducts } from '@/store/admin/products-slic';
 import { Item } from '@radix-ui/react-select';
 import React, { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
+import { data } from 'react-router-dom';
 import { toast } from 'sonner';
 
 
@@ -60,6 +61,16 @@ const Products = () => {
         setImageFile(null);
         setFormData(initialFormData);
         toast.success("Product added successfully!");
+      }
+    })
+  }
+
+  function handleDelete(getCurrentProductId){
+    console.log(getCurrentProductId, "delete")
+    dispatch(deleteProduct(getCurrentProductId)).then(data=>{
+      if(data?.payload?.success){
+        dispatch(fetchAllProducts());
+        toast.success("Product deleted successfully!");
       }
     })
   }
@@ -130,6 +141,7 @@ const Products = () => {
                 setFormData={setFormData}
                 setOpenCreateProductsDialog={setOpenCreateProductsDialog}
                 setCurrentEditedId={setCurrentEditedId}
+                handleDelete={handleDelete}
                 product={productItem} />) : null
         }
       </div>
