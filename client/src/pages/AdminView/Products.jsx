@@ -4,7 +4,8 @@ import Form from '@/components/CommonCompo/Form';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { addProductFormElements } from '@/config/registerFormControls';
-import { addNewProduct, fetchAllProducts } from '@/store/admin/products-slic';
+import { addNewProduct, editProduct, fetchAllProducts } from '@/store/admin/products-slic';
+import { Item } from '@radix-ui/react-select';
 import React, { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
@@ -16,8 +17,9 @@ const initialFormData = {
   description: '',
   category: '',
   brand: '',
-  pirce: '',
+  price: '',
   salePrice: '',
+  totalStock: '',
 };
 
 const Products = () => {
@@ -33,6 +35,19 @@ const Products = () => {
 
   function onSubmit(e) {
     e.preventDefault();
+
+    currentEditedId !== null ? dispatch(editProduct({
+      id: currentEditedId, formData
+    })).then((data)=>{
+      console.log(data, "edit")
+
+      if(data?.payload.success){
+        dispatch(fetchAllProducts());
+        setOpenCreateProductsDialog(false);
+        setFormData(initialFormData);
+        setCurrentEditedId(null);
+      }
+    }) : 
     dispatch(addNewProduct({
       ...formData,
       image: uploadedImageUrl,
@@ -48,6 +63,10 @@ const Products = () => {
       }
     })
   }
+
+  function isFormValid() {
+  return Object.values(formData).every(value => value !== '');
+}
 
   useEffect(() => {
     dispatch(fetchAllProducts());
@@ -99,6 +118,7 @@ const Products = () => {
             setFormData={setFormData}
             buttonText={ currentEditedId !== null ? 'Edit Product' : 'Add Product'}
             onSubmit={onSubmit}
+            isBtnDisabled={!isFormValid()}
           />
         </SheetContent>
       </Sheet>
