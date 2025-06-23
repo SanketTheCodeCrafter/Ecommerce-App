@@ -12,7 +12,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 
-mongoose.connect("mongodb+srv://Sanket:Ecommerce@ecommerce.2hoo8jz.mongodb.net/")
+mongoose.connect(process.env.MONGO_URL)
 .then(()=>{
     console.log(('MongoDB connected successfully'));
 })

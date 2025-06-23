@@ -1,4 +1,4 @@
-import { Routes } from "react-router-dom"
+import { Navigate, Routes } from "react-router-dom"
 import { Route } from "react-router-dom";
 import AuthLayout from "./components/Auth/AuthLayout";
 import AuthLogin from "./pages/Auth/AuthLogin";
@@ -41,6 +41,7 @@ function App() {
     <div className="flex flex-col overflow-hidden bg-white">
 
       <Routes>
+        <Route path="/" element={<Navigate to="/auth/register" replace />} />
         <Route path='/auth' element={<CheckAuth isAuthenticated={isAuthenticated} user={user} >
           <AuthLayout />
         </CheckAuth>}>
