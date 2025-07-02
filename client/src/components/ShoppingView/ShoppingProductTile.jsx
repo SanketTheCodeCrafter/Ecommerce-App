@@ -32,7 +32,7 @@ const ShoppingProductTile = ({product}) => {
                 <h2 className='text-xl font-bold mb-2'>{product?.title}</h2>
                 <div className="flex justify-between items-center mb-2">
                     <span className='text-sm text-muted-foreground'>{categoryOptionsMap[product?.category]}</span>
-                    {console.log('Brand value:', product?.brand)}
+                    {/* {console.log('Brand value:', product?.brand)} */}
                     <span className='text-sm text-muted-foreground'>{brandOptionsMap[product?.brand] || product?.brand}</span>
                 </div>
                 <div className="flex justify-between items-center mb-2">
