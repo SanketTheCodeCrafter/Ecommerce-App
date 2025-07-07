@@ -4,10 +4,10 @@ import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { brandOptionsMap, categoryOptionsMap } from '@/config/registerFormControls'
 
-const ShoppingProductTile = ({product}) => {
+const ShoppingProductTile = ({product, handleGetProductDetails}) => {
   return (
     <Card className={'w-full max-w-sm mx-auto p-0 pb-4'}>
-        <div>
+        <div onClick={() => handleGetProductDetails(product?._id)} className='cursor-pointer hover:shadow-lg transition-shadow duration-300'>
             <div className="relative">
                 <img 
                     src={product?.image} 
