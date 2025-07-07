@@ -5,15 +5,34 @@ import { DropdownMenu } from '@/components/ui/dropdown-menu'
 import { sortOptions } from '@/config/registerFormControls'
 import { fetchAllFilteredProducts } from '@/store/shop/product-slice'
 import { DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
-import { ArrowUpDownIcon } from 'lucide-react'
+import { ArrowUpDownIcon, ParkingMeter } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useSearchParams } from 'react-router-dom'
+
+
+function createSearchParamsHelper(filterParams){
+  const queryParams = [];
+
+  for(const [key, value] of Object.entries(filterParams)){
+    if(Array.isArray(value) && value.length > 0){
+      const paramVAlue = value.join(',');
+
+      queryParams.push(`${key}=${encodeURIComponent(paramVAlue)}`)
+    }
+  }
+
+  console.log(queryParams, "queryParams");
+
+  return queryParams.join('&');
+}
 
 const Listing = () => {
   const dispatch = useDispatch()
   const { productList } = useSelector((state) => state.shopProducts)
   const [filter, setFilter] = useState({});
   const [sort, setSort] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
 
   function handleSort(value) {
@@ -48,7 +67,7 @@ const Listing = () => {
     sessionStorage.setItem("filter", JSON.stringify(cpyFilter));
   }
 
-  console.log(filter, "filter")
+  console.log(searchParams, "searchParams")
 
 
   useEffect(() => {
@@ -57,8 +76,18 @@ const Listing = () => {
   }, [])
 
   useEffect(() => {
-    dispatch(fetchAllFilteredProducts())
-  }, [dispatch])
+    if(filter !== null && sort !== null){
+      
+      dispatch(fetchAllFilteredProducts({filterParams: filter, sortParams: sort }))
+    }
+  }, [dispatch, sort, filter])
+
+  useEffect(()=>{
+    if(filter && Object.keys(filter).length > 0){
+      const createQueryString = createSearchParamsHelper(filter);
+      setSearchParams(new URLSearchParams(createQueryString));
+    }
+  }, [filter])
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 p-3 md:p-4 bg-muted/30">
