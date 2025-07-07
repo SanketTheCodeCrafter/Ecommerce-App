@@ -6,7 +6,7 @@ import { brandOptionsMap, categoryOptionsMap } from '@/config/registerFormContro
 
 const ShoppingProductTile = ({product}) => {
   return (
-    <Card className={'w-full max-w-sm mx-auto'}>
+    <Card className={'w-full max-w-sm mx-auto p-0 pb-4'}>
         <div>
             <div className="relative">
                 <img 
