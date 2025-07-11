@@ -5,7 +5,7 @@ export const addToCart = async (req, res) => {
     try {
         const { userId, productId, quantity } = req.body;
 
-        if (!useId || !productId || quantity <= 0) {
+        if (!userId || !productId || quantity <= 0) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid data provided!",
@@ -41,9 +41,13 @@ export const addToCart = async (req, res) => {
         }
 
         await cart.save();
+        await cart.populate({
+            path: 'items.productId',
+            select: 'image title price salePrice',
+        });
         res.status(200).json({
             success: true,
-            data: cart,
+            data: cart
         });
 
     } catch (error) {
@@ -56,6 +60,7 @@ export const addToCart = async (req, res) => {
 }
 
 export const fetchCartItems = async (req, res) => {
+    console.log("fetchCartItems called with userId:", req.params.userId);
     try {
         const { userId } = req.params;
 
@@ -72,10 +77,13 @@ export const fetchCartItems = async (req, res) => {
         });
 
         if (!cart) {
-            return res.status(404).json({
-                success: false,
-                message: "Cart not found!",
-            })
+            return res.status(200).json({
+                success: true,
+                data: {
+                    userId,
+                    items: [],
+                }
+            });
         }
 
         const validItems = cart.items.filter((productItem) => productItem.productId);
@@ -186,7 +194,7 @@ export const deleteCartItem = async (req, res) => {
             })
         }
 
-        const cart = await Cart.findOne({ useId }).populate({
+        const cart = await Cart.findOne({ userId }).populate({
             path: 'items.productId',
             select: 'image title price salePrice',
         });
@@ -198,7 +206,13 @@ export const deleteCartItem = async (req, res) => {
             });
         }
 
-        cart.items = cart.populate({
+        cart.items = cart.items.filter(
+            (item) => item.productId._id.toString() !== productId
+        );
+
+        await cart.save();
+
+        await cart.populate({
             path: 'items.productId',
             select: 'image title price salePrice',
         })

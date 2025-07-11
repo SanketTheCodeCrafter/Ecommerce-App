@@ -1,5 +1,5 @@
 import { HousePlug, LogOut, LogOutIcon, Menu, ShoppingCart, UserCog } from 'lucide-react'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet'
@@ -9,13 +9,17 @@ import { Label } from '@radix-ui/react-label'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
 import { Avatar, AvatarFallback } from '@radix-ui/react-avatar'
 import { logOut } from '@/store/auth-slice'
+import UserCartWrapper from './UserCartWrapper'
+import { fetchCartItems } from '@/store/shop/cart-slice'
 
 const Header = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth)
+  const [openCartSheet, setOpenCartSheet] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { cartItems } = useSelector((state) => state.shopCart);
 
-  function handleLogout(){
+  function handleLogout() {
     dispatch(logOut())
   }
 
@@ -33,13 +37,23 @@ const Header = () => {
     )
   }
 
+  useEffect(()=>{
+    dispatch(fetchCartItems(user?.id));
+  }, [dispatch]);
+
   function HeaderRightContent() {
     return (
       <div className="flex lg:items-center lg:flex-row flex-col gap-4">
-        <Button variant={'outline'} size={'icon'} >
-          <ShoppingCart className='w-6 h-6' />
-          <span className='sr-only'>User Cart</span>
-        </Button>
+        <Sheet open={openCartSheet} onOpenChange={()=> setOpenCartSheet(false)}>
+          <Button 
+          onClick={()=>setOpenCartSheet(true)}
+          variant={'outline'} size={'icon'} >
+            <ShoppingCart className='w-6 h-6' />
+            <span className='sr-only'>User Cart</span>
+          </Button>
+
+          <UserCartWrapper cartItems={cartItems && cartItems.items && cartItems.items.length > 0 ? cartItems.items : []}/>
+        </Sheet>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="bg-black rounded-full w-10 h-10 flex items-center justify-center">
@@ -52,15 +66,15 @@ const Header = () => {
             <DropdownMenuLabel>Logged in as {user?.userName}</DropdownMenuLabel>
             <DropdownMenuSeparator className="my-2 h-px bg-gray-100" />
 
-            <DropdownMenuItem className="hover:bg-gray-100 cursor-pointer flex items-center" 
-            onClick={()=> navigate('/shop/account')}
+            <DropdownMenuItem className="hover:bg-gray-100 cursor-pointer flex items-center"
+              onClick={() => navigate('/shop/account')}
             >
               <UserCog className='mr-2 h-4 w-4' />
               Account
             </DropdownMenuItem>
             <DropdownMenuSeparator className="my-2 h-px bg-gray-100" />
             <DropdownMenuItem className="hover:bg-gray-100 cursor-pointer flex items-center"
-            onClick={handleLogout}
+              onClick={handleLogout}
             >
               <LogOutIcon className='mr-2 h-4 w-4' />
               Logout

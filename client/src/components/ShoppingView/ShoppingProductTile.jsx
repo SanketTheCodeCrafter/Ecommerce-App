@@ -4,7 +4,7 @@ import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { brandOptionsMap, categoryOptionsMap } from '@/config/registerFormControls'
 
-const ShoppingProductTile = ({product, handleGetProductDetails}) => {
+const ShoppingProductTile = ({product, handleGetProductDetails, handleAddToCart}) => {
   return (
     <Card className={'w-full max-w-sm mx-auto p-0 pb-4'}>
         <div onClick={() => handleGetProductDetails(product?._id)} className='cursor-pointer hover:shadow-lg transition-shadow duration-300'>
@@ -55,7 +55,9 @@ const ShoppingProductTile = ({product, handleGetProductDetails}) => {
                     Out of Stock
                 </Button>
             ): (
-                <Button className={'w-full bg-primary hover:bg-primary/90 text-white'}>
+                <Button 
+                onClick={()=>handleAddToCart(product?._id)}
+                className={'w-full bg-primary hover:bg-primary/90 text-white'}>
                     Add to Cart
                 </Button>
             )}

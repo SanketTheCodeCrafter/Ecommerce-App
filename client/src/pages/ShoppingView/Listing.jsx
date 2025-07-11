@@ -10,13 +10,14 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 import ProductDetails from './ProductDetails'
+import { addToCart, fetchCartItems } from '@/store/shop/cart-slice'
+import { toast } from 'sonner'
 
-
-function createSearchParamsHelper(filterParams){
+function createSearchParamsHelper(filterParams) {
   const queryParams = [];
 
-  for(const [key, value] of Object.entries(filterParams)){
-    if(Array.isArray(value) && value.length > 0){
+  for (const [key, value] of Object.entries(filterParams)) {
+    if (Array.isArray(value) && value.length > 0) {
       const paramVAlue = value.join(',');
 
       queryParams.push(`${key}=${encodeURIComponent(paramVAlue)}`)
@@ -35,31 +36,31 @@ const Listing = () => {
   const [sort, setSort] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
-
+  const { user } = useSelector((state)=>state.auth)
 
   function handleSort(value) {
     console.log(value)
     setSort(value)
   }
 
-  function handleFilter(getSectionId, getCurrentOption){
-    let cpyFilter = {...filter};
+  function handleFilter(getSectionId, getCurrentOption) {
+    let cpyFilter = { ...filter };
     const indexOfCurrentSection = Object.keys(cpyFilter).indexOf(getSectionId);
 
-    if(indexOfCurrentSection === -1){
+    if (indexOfCurrentSection === -1) {
       cpyFilter = {
         ...cpyFilter,
         [getSectionId]: [getCurrentOption]
       };
-    }else{
+    } else {
       const indexOfCurrentOption =
-      cpyFilter[getSectionId].indexOf(getCurrentOption);
+        cpyFilter[getSectionId].indexOf(getCurrentOption);
 
-      if(indexOfCurrentOption === -1){
+      if (indexOfCurrentOption === -1) {
         cpyFilter[getSectionId].push(getCurrentOption);
-      }else{
+      } else {
         cpyFilter[getSectionId].splice(indexOfCurrentOption, 1);
-        if(cpyFilter[getSectionId].length === 0){
+        if (cpyFilter[getSectionId].length === 0) {
           delete cpyFilter[getSectionId];
         }
       }
@@ -69,12 +70,32 @@ const Listing = () => {
     sessionStorage.setItem("filter", JSON.stringify(cpyFilter));
   }
 
-  function handleGetProductDetails(productId){
+  function handleGetProductDetails(productId) {
     console.log(productId, "productId")
     dispatch(fetchProductDetails(productId))
   }
 
-  console.log(productDetails, "productDetails")
+  function handleAddToCart(getCurrentProductId){
+    console.log(getCurrentProductId, 'getCurrentProductId')
+    dispatch(addToCart({
+      userId: user?.id,
+      productId: getCurrentProductId,
+      quantity: 1,
+    })).then(data=>{
+      if(data?.payload?.success){
+        dispatch(fetchCartItems(user?.id));
+        toast.success('Product added to cart!');
+      }else{
+        if(data?.payload?.message){
+          toast.error(data?.payload?.message);
+        }else{
+          toast.error('Something went wrong!');
+        }
+      }
+    })
+  }
+
+  // console.log(cartItems, "cartItems")
 
 
   useEffect(() => {
@@ -83,21 +104,21 @@ const Listing = () => {
   }, [])
 
   useEffect(() => {
-    if(filter !== null && sort !== null){
-      
-      dispatch(fetchAllFilteredProducts({filterParams: filter, sortParams: sort }))
+    if (filter !== null && sort !== null) {
+
+      dispatch(fetchAllFilteredProducts({ filterParams: filter, sortParams: sort }))
     }
   }, [dispatch, sort, filter])
 
-  useEffect(()=>{
-    if(filter && Object.keys(filter).length > 0){
+  useEffect(() => {
+    if (filter && Object.keys(filter).length > 0) {
       const createQueryString = createSearchParamsHelper(filter);
       setSearchParams(new URLSearchParams(createQueryString));
     }
   }, [filter])
 
-  useEffect(()=>{
-    if(productDetails !== null ) setOpenDetailsDialog(true);
+  useEffect(() => {
+    if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails])
 
   return (
@@ -148,14 +169,18 @@ const Listing = () => {
           {
             productList && productList.length > 0 ? (
               productList.map((productItem) => (
-                <ShoppingProductTile product={productItem} key={productItem._id} handleGetProductDetails={handleGetProductDetails}/>
+                <ShoppingProductTile
+                  product={productItem}
+                  key={productItem._id}
+                  handleGetProductDetails={handleGetProductDetails}
+                  handleAddToCart={handleAddToCart} />
               ))
             ) : null
           }
         </div>
 
       </div>
-      <ProductDetails open={openDetailsDialog} setOpen={setOpenDetailsDialog} productDetails={productDetails}/>
+      <ProductDetails open={openDetailsDialog} setOpen={setOpenDetailsDialog} productDetails={productDetails} />
     </div>
   )
 }
