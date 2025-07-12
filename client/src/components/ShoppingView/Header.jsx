@@ -12,8 +12,24 @@ import { logOut } from '@/store/auth-slice'
 import UserCartWrapper from './UserCartWrapper'
 import { fetchCartItems } from '@/store/shop/cart-slice'
 
-const Header = () => {
-  const { isAuthenticated, user } = useSelector((state) => state.auth)
+function MenuItems() {
+  // console.log(user, "useer")
+
+  return (
+    <nav className='flex flex-col mb-3 lg:mb-0 lg:items-center gap-6 lg:flex-row'>
+      {shoppingViewHeaderMenuItems.map((menuitem) => (
+        <Label className='text-sm font-medium cursor-pointer' key={menuitem.id}>
+          {menuitem.label}
+        </Label>
+      ))}
+    </nav>
+  )
+}
+
+
+
+function HeaderRightContent() {
+  const { user } = useSelector((state) => state.auth);
   const [openCartSheet, setOpenCartSheet] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -22,68 +38,56 @@ const Header = () => {
   function handleLogout() {
     dispatch(logOut())
   }
-
-  function MenuItems() {
-    // console.log(user, "useer")
-
-    return (
-      <nav className='flex flex-col mb-3 lg:mb-0 lg:items-center gap-6 lg:flex-row'>
-        {shoppingViewHeaderMenuItems.map((menuitem) => (
-          <Label className='text-sm font-medium cursor-pointer' key={menuitem.id}>
-            {menuitem.label}
-          </Label>
-        ))}
-      </nav>
-    )
-  }
-
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(fetchCartItems(user?.id));
   }, [dispatch]);
 
-  function HeaderRightContent() {
-    return (
-      <div className="flex lg:items-center lg:flex-row flex-col gap-4">
-        <Sheet open={openCartSheet} onOpenChange={()=> setOpenCartSheet(false)}>
-          <Button 
-          onClick={()=>setOpenCartSheet(true)}
+  return (
+    <div className="flex lg:items-center lg:flex-row flex-col gap-4">
+      <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
+        <Button
+          onClick={() => setOpenCartSheet(true)}
           variant={'outline'} size={'icon'} >
-            <ShoppingCart className='w-6 h-6' />
-            <span className='sr-only'>User Cart</span>
-          </Button>
+          <ShoppingCart className='w-6 h-6' />
+          <span className='sr-only'>User Cart</span>
+        </Button>
 
-          <UserCartWrapper cartItems={cartItems && cartItems.items && cartItems.items.length > 0 ? cartItems.items : []}/>
-        </Sheet>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Avatar className="bg-black rounded-full w-10 h-10 flex items-center justify-center">
-              <AvatarFallback className="bg-black text-white font-extrabold rounded-full w-10 h-10 flex items-center justify-center text-lg">
-                {user?.userName?.[0]?.toUpperCase() || ""}
-              </AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent side='right' className='w-56 bg-white' >
-            <DropdownMenuLabel>Logged in as {user?.userName}</DropdownMenuLabel>
-            <DropdownMenuSeparator className="my-2 h-px bg-gray-100" />
+        <UserCartWrapper cartItems={cartItems && cartItems.items && cartItems.items.length > 0 ? cartItems.items : []} />
+      </Sheet>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Avatar className="bg-black rounded-full w-10 h-10 flex items-center justify-center">
+            <AvatarFallback className="bg-black text-white font-extrabold rounded-full w-10 h-10 flex items-center justify-center text-lg">
+              {user?.userName?.[0]?.toUpperCase() || ""}
+            </AvatarFallback>
+          </Avatar>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent side='right' className='w-56 bg-white' >
+          <DropdownMenuLabel>Logged in as {user?.userName}</DropdownMenuLabel>
+          <DropdownMenuSeparator className="my-2 h-px bg-gray-100" />
 
-            <DropdownMenuItem className="hover:bg-gray-100 cursor-pointer flex items-center"
-              onClick={() => navigate('/shop/account')}
-            >
-              <UserCog className='mr-2 h-4 w-4' />
-              Account
-            </DropdownMenuItem>
-            <DropdownMenuSeparator className="my-2 h-px bg-gray-100" />
-            <DropdownMenuItem className="hover:bg-gray-100 cursor-pointer flex items-center"
-              onClick={handleLogout}
-            >
-              <LogOutIcon className='mr-2 h-4 w-4' />
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    )
-  }
+          <DropdownMenuItem className="hover:bg-gray-100 cursor-pointer flex items-center"
+            onClick={() => navigate('/shop/account')}
+          >
+            <UserCog className='mr-2 h-4 w-4' />
+            Account
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className="my-2 h-px bg-gray-100" />
+          <DropdownMenuItem className="hover:bg-gray-100 cursor-pointer flex items-center"
+            onClick={handleLogout}
+          >
+            <LogOutIcon className='mr-2 h-4 w-4' />
+            Logout
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  )
+}
+
+function Header() {
+  const { isAuthenticated, user } = useSelector((state) => state.auth)
+
 
   return (
     <header className='sticky top-0 z-40 w-full border-b bg-background'>
