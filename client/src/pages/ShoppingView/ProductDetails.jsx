@@ -5,8 +5,37 @@ import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { StarIcon } from 'lucide-react'
 import React from 'react'
+import { useDispatch } from 'react-redux';
+import { toast } from 'sonner';
+import { useSelector } from 'react-redux';
+import { addToCart, fetchCartItems } from '@/store/shop/cart-slice'
 
 const ProductDetails = ({ open, setOpen, productDetails }) => {
+    
+    const dispatch = useDispatch();
+    const {user} = useSelector(state => state.auth);
+
+    function handleAddToCart(getCurrentProductId) {
+        console.log(getCurrentProductId, 'getCurrentProductId')
+        console.log(user, 'user')
+        dispatch(addToCart({
+            userId: user?.id,
+            productId: getCurrentProductId,
+            quantity: 1,
+        })).then(data => {
+            if (data?.payload?.success) {
+                dispatch(fetchCartItems(user?.id));
+                toast.success('Product added to cart!');
+            } else {
+                if (data?.payload?.message) {
+                    toast.error(data?.payload?.message);
+                } else {
+                    toast.error('Something went wrong!');
+                }
+            }
+        })
+    }
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className='grid grid-cols-2 gap-8 sm:p-12 max-w-[90vw] sm:max-w-[80vw] lg:max-w-[70vw]'>
@@ -53,7 +82,7 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
                     </div>
 
                     <div className="mt-5">
-                        <Button className={'w-full'}>
+                        <Button className={'w-full'} onClick={() => handleAddToCart(productDetails?._id)}>
                             Add to Cart
                         </Button>
                     </div>
