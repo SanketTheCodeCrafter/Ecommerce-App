@@ -42,6 +42,9 @@ const shoppingProductSlice = createSlice({
         },
         setProductList: (state, action) => {
             state.productList = action.payload;
+        },
+        setProductDetails: (state, action)=>{
+            state.productDetails = null;
         }
     },
 
@@ -72,5 +75,5 @@ const shoppingProductSlice = createSlice({
     }
 })
 
-export const { setLoading, setProductList } = shoppingProductSlice.actions;
+export const { setLoading, setProductList, setProductDetails } = shoppingProductSlice.actions;
 export default shoppingProductSlice.reducer;
