@@ -6,10 +6,13 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeftIcon, ChevronRightIcon, ShirtIcon, CloudLightning, BabyIcon, WatchIcon, UmbrellaIcon, Shirt, WashingMachine, ShoppingBasket, Airplay, Images, Heater } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllFilteredProducts } from '@/store/shop/product-slice';
+import { fetchAllFilteredProducts, fetchProductDetails } from '@/store/shop/product-slice';
 import ShoppingProductTile from '@/components/ShoppingView/ShoppingProductTile';
 import { useNavigate } from 'react-router-dom';
-
+import { addToCart, fetchCartItems } from '@/store/shop/cart-slice';
+import { toast } from 'sonner';
+import ProductDetails from './ProductDetails';
+ 
 const categoriesWithIcon = [
   { id: "men", label: "Men", icon: ShirtIcon },
   { id: "women", label: "Women", icon: CloudLightning },
@@ -31,8 +34,10 @@ const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const slides = [bannerOne, bannerTwo, bannerThree]
   const dispatch = useDispatch();
-  const { productList } = useSelector(state => state.shopProducts)
+  const { productList, productDetails } = useSelector(state => state.shopProducts)
+  const { user } = useSelector(state => state.auth)
   const navigate = useNavigate();
+  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -49,6 +54,10 @@ const Home = () => {
     }))
   }, [dispatch])
 
+  useEffect(() => {
+    if (productDetails !== null) setOpenDetailsDialog(true);
+  }, [productDetails]);
+
   function handleNavigateToListingPage (getCurrentItem, section){
     sessionStorage.removeItem('filter');
     const currentFilter = {
@@ -56,6 +65,25 @@ const Home = () => {
     };
     sessionStorage.setItem('filter', JSON.stringify(currentFilter));
     navigate('/shop/listing');
+  }
+
+  function handleGetProductDetails(getCurrentProductId) {
+    dispatch(fetchProductDetails(getCurrentProductId));
+  }
+
+  function handleAddtoCart(getCurrentProductId) {
+    dispatch(
+      addToCart({
+        userId: user?.id,
+        productId: getCurrentProductId,
+        quantity: 1,
+      })
+    ).then((data) => {
+      if (data?.payload?.success) {
+        dispatch(fetchCartItems(user?.id));
+        toast.success("Product is added to cart");
+      }
+    });
   }
   // console.log(productList)
   return (
@@ -126,9 +154,9 @@ const Home = () => {
             {productList && productList.length > 0
               ? productList.map((productItem) => (
                 <ShoppingProductTile
-                  // handleGetProductDetails={handleGetProductDetails}
+                  handleGetProductDetails={handleGetProductDetails}
                   product={productItem}
-
+                  handleAddToCart={handleAddtoCart}
                 />
               ))
               : <div className='text-center text-gray-500'>
@@ -138,6 +166,12 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      <ProductDetails
+        open={openDetailsDialog}
+        setOpen={setOpenDetailsDialog}
+        productDetails={productDetails}
+      />
     </div>
   )
 }
