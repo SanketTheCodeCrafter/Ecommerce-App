@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllFilteredProducts } from '@/store/shop/product-slice';
 import ShoppingProductTile from '@/components/ShoppingView/ShoppingProductTile';
+import { useNavigate } from 'react-router-dom';
 
 const categoriesWithIcon = [
   { id: "men", label: "Men", icon: ShirtIcon },
@@ -31,6 +32,7 @@ const Home = () => {
   const slides = [bannerOne, bannerTwo, bannerThree]
   const dispatch = useDispatch();
   const { productList } = useSelector(state => state.shopProducts)
+  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -47,7 +49,14 @@ const Home = () => {
     }))
   }, [dispatch])
 
-
+  function handleNavigateToListingPage (getCurrentItem, section){
+    sessionStorage.removeItem('filter');
+    const currentFilter = {
+      [section] : [getCurrentItem.id],
+    };
+    sessionStorage.setItem('filter', JSON.stringify(currentFilter));
+    navigate('/shop/listing');
+  }
   // console.log(productList)
   return (
     <div className='flex flex-col min-h-screen'>
@@ -76,6 +85,7 @@ const Home = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {categoriesWithIcon.map((categoryItem) => (
               <Card
+                onClick={()=>handleNavigateToListingPage(categoryItem, 'category')}
                 className={'cursor-pointer hover:shadow-lg transition-shadow duration-300'}
               >
                 <CardContent className={'flex flex-col items-center justify-center p-6'}>
@@ -94,7 +104,7 @@ const Home = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {brandsWithIcon.map((brandItem) => (
               <Card
-                // onClick={() => handleNavigateToListingPage(brandItem, "brand")}
+                onClick={() => handleNavigateToListingPage(brandItem, "brand")}
                 className="cursor-pointer hover:shadow-lg transition-shadow"
               >
                 <CardContent className="flex flex-col items-center justify-center p-6">

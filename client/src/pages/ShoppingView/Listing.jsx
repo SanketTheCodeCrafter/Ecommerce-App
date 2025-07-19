@@ -12,6 +12,7 @@ import { useSearchParams } from 'react-router-dom'
 import ProductDetails from './ProductDetails'
 import { addToCart, fetchCartItems } from '@/store/shop/cart-slice'
 import { toast } from 'sonner'
+import { useLocation } from 'react-router-dom';
 
 function createSearchParamsHelper(filterParams) {
   const queryParams = [];
@@ -37,6 +38,7 @@ const Listing = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const { user } = useSelector((state)=>state.auth)
+  const location = useLocation();
 
   function handleSort(value) {
     console.log(value)
@@ -98,24 +100,48 @@ const Listing = () => {
   // console.log(cartItems, "cartItems")
 
 
+  // Set default sort ONCE on mount
   useEffect(() => {
     setSort('price-lowtohigh');
-    setFilter(JSON.parse(sessionStorage.getItem('filter')) || {})
-  }, [])
+  }, []);
 
+  // On mount or location change, set filter from searchParams (URL is source of truth)
+  useEffect(() => {
+    const paramsObj = {};
+    for (const [key, value] of searchParams.entries()) {
+      paramsObj[key] = value.split(',');
+    }
+    // If no params, fallback to sessionStorage (for first navigation)
+    if (Object.keys(paramsObj).length > 0) {
+      setFilter(paramsObj);
+    } else {
+      const sessionFilter = JSON.parse(sessionStorage.getItem('filter')) || {};
+      setFilter(sessionFilter);
+      // Also update the URL to reflect the session filter
+      if (Object.keys(sessionFilter).length > 0) {
+        const createQueryString = createSearchParamsHelper(sessionFilter);
+        setSearchParams(createQueryString);
+      }
+    }
+  }, [location]);
+
+  // When filter or sort changes, fetch products
   useEffect(() => {
     if (filter !== null && sort !== null) {
-
       dispatch(fetchAllFilteredProducts({ filterParams: filter, sortParams: sort }))
     }
   }, [dispatch, sort, filter])
 
+  // Only update search params if they are different from current
   useEffect(() => {
     if (filter && Object.keys(filter).length > 0) {
       const createQueryString = createSearchParamsHelper(filter);
-      setSearchParams(new URLSearchParams(createQueryString));
+      const newParams = new URLSearchParams(createQueryString).toString();
+      if (newParams !== searchParams.toString()) {
+        setSearchParams(newParams);
+      }
     }
-  }, [filter])
+  }, [filter, searchParams, setSearchParams]);
 
   useEffect(() => {
     if (productDetails !== null) setOpenDetailsDialog(true);

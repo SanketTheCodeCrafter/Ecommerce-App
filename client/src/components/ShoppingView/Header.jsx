@@ -13,12 +13,25 @@ import UserCartWrapper from './UserCartWrapper'
 import { fetchCartItems } from '@/store/shop/cart-slice'
 
 function MenuItems() {
-  // console.log(user, "useer")
+  const navigate = useNavigate();
+
+  // Only set filter for real categories
+  const categoryIds = ["men", "women", "kids", "footwear", "accessories"];
+
+  function handleNavigate(getCurrentMenuItem){
+    if (categoryIds.includes(getCurrentMenuItem.id)) {
+      sessionStorage.setItem('filter', JSON.stringify({ category: [getCurrentMenuItem.id] }));
+    } else {
+      sessionStorage.removeItem('filter');
+    }
+    navigate(getCurrentMenuItem.path);
+    console.log(getCurrentMenuItem.path, 'getCurrentMenuitem.path')
+  }
 
   return (
     <nav className='flex flex-col mb-3 lg:mb-0 lg:items-center gap-6 lg:flex-row'>
       {shoppingViewHeaderMenuItems.map((menuitem) => (
-        <Label className='text-sm font-medium cursor-pointer' key={menuitem.id}>
+        <Label className='text-sm font-medium cursor-pointer' key={menuitem.id} onClick={()=>handleNavigate(menuitem)}>
           {menuitem.label}
         </Label>
       ))}
