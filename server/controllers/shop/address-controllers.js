@@ -61,7 +61,7 @@ export const editAddress = async (req, res) => {
 
     try {
         const { userId, addressId } = req.params;
-        const { formData } = req.body;
+        const updateFields = req.body;
 
         if (!userId || !addressId) {
             return res.status(400).json({
@@ -72,7 +72,7 @@ export const editAddress = async (req, res) => {
         const address = await Address.findOneAndUpdate({
             _id: addressId,
             userId,
-        }, formData, { new: true });
+        }, updateFields, { new: true });
 
         if (!address) {
             return res.status(400).json({
