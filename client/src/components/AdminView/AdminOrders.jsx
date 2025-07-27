@@ -1,9 +1,9 @@
-import React from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Button } from '../ui/button'
+import { Table, TableHead, TableHeader, TableRow, TableBody, TableCell } from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
+import React from 'react'
 
-const ShoppingOrders = () => {
+const AdminOrderView = () => {
   return (
     <Card>
       <CardHeader>
@@ -22,7 +22,7 @@ const ShoppingOrders = () => {
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+           <TableBody>
             <TableRow>
               <TableCell>12345</TableCell>
               <TableCell>27/07/2025</TableCell>
@@ -39,4 +39,4 @@ const ShoppingOrders = () => {
   )
 }
 
-export default ShoppingOrders
+export default AdminOrderView

@@ -6,7 +6,7 @@ import AuthRegister from "./pages/Auth/AuthRegister";
 import AdminLayout from "./components/AdminView/AdminLayout";
 import Dashboard from "./pages/AdminView/Dashboard";
 import Features from "./pages/AdminView/Features";
-import Orders from "./pages/AdminView/Orders";
+import AdminOrders from './pages/AdminView/Order';
 import Products from "./pages/AdminView/Products";
 import ShopLayout from "./components/ShoppingView/ShopLayout";
 import NotFound from "./pages/NotFound/NotFound";
@@ -53,7 +53,7 @@ function App() {
         </CheckAuth>}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="features" element={<Features />} />
-          <Route path="orders" element={<Orders />} />
+          <Route path="orders" element={<AdminOrders />} />
           <Route path="products" element={<Products />} />
         </Route>
         <Route path="/shop" element={<CheckAuth isAuthenticated={isAuthenticated} user={user} >
@@ -73,4 +73,4 @@ function App() {
 
 export default App
 
-// 9.46.35
+//10.04.00
