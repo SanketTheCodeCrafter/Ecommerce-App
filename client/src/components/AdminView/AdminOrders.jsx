@@ -1,9 +1,13 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Table, TableHead, TableHeader, TableRow, TableBody, TableCell } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import React from 'react'
+import React, { useState } from 'react'
+import { Dialog, DialogTrigger } from '@/components/ui/dialog'
+import AdOrderDetails from './AdOrderDetails'
 
 const AdminOrderView = () => {
+  const [openDetailsDailog, setOpenDetailsDialog] = useState(false);
+
   return (
     <Card>
       <CardHeader>
@@ -22,14 +26,21 @@ const AdminOrderView = () => {
               </TableHead>
             </TableRow>
           </TableHeader>
-           <TableBody>
+          <TableBody>
             <TableRow>
               <TableCell>12345</TableCell>
               <TableCell>27/07/2025</TableCell>
               <TableCell>In Process</TableCell>
               <TableCell>$1000</TableCell>
               <TableCell>
-                <Button>View Details</Button>
+                <Dialog open={openDetailsDailog} onOpenChange={setOpenDetailsDialog}>
+                  <DialogTrigger asChild>
+                    <Button
+                      onClick={()=> setOpenDetailsDialog(true)}
+                    >View Details</Button>
+                  </DialogTrigger>
+                  <AdOrderDetails />
+                </Dialog>
               </TableCell>
             </TableRow>
           </TableBody>
