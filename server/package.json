@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@paypal/paypal-server-sdk": "^1.1.0",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.6.1",
     "cookie-parser": "^1.4.7",
@@ -15,7 +16,6 @@
   "version": "1.0.0",
   "type": "module",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
