@@ -15,7 +15,7 @@ const initialAddressFormData = {
     notes: "",
 };
 
-const Address = () => {
+const Address = ({setCurrentSelectedAddress}) => {
     const [formData, setFormData] = useState(initialAddressFormData);
     const dispatch = useDispatch();
     const { user } = useSelector(state => state.auth);
@@ -86,12 +86,12 @@ const Address = () => {
     useEffect(() => {
     if(user?.id){
         dispatch(fetchAllAddress(user?.id)).then((data) => {
-            console.log('Fetched addresses:', data);
+            // console.log('Fetched addresses:', data);
         });
     }
 }, [dispatch, user?.id])
 
-    console.log(addressList, 'addressList');
+    // console.log(addressList, 'addressList');
 
     return (
         <Card>
@@ -100,7 +100,9 @@ const Address = () => {
                     <AddressCard
                         handleDeleteAddress={handleDeleteAddress}
                         handleEditAddress={handleEditAddress}
-                        addressInfo={singleAddressItem} key={singleAddressItem._id} />
+                        addressInfo={singleAddressItem} key={singleAddressItem._id} 
+                        setCurrentSelectedAddress={setCurrentSelectedAddress}
+                        />
                 )) : null}
             </div>
             <CardHeader>

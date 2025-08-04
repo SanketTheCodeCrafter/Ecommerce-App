@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+import 'dotenv/config';
 import AuthRoutes from './routes/AuthRoutes.js';
 import adminProductsRouter from './routes/admin/products-routes.js'
 import shopProductsRouter from './routes/shop/products-routes.js';

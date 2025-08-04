@@ -30,12 +30,23 @@ export const createOrder = async (req, res) => {
         // Create PayPal order
         const request = new checkoutNodeJssdk.orders.OrdersCreateRequest();
         request.prefer("return=representation");
+
+        const itemTotal = cartItems
+            .reduce((sum, item) => sum + (item.price * item.quantity), 0)
+            .toFixed(2);
+
         request.requestBody({
             intent: 'CAPTURE',
             purchase_units: [{
                 amount: {
                     currency_code: 'USD',
-                    value: totalAmount.toFixed(2)
+                    value: totalAmount.toFixed(2),
+                    breakdown: {
+                        item_total: {
+                            currency_code: 'USD',
+                            value: itemTotal
+                        }
+                    }
                 },
                 items: cartItems.map((item) => ({
                     name: item.title,
