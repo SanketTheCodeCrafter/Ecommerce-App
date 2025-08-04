@@ -1,10 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { build } from 'vite';
 
 
-const initialSlice = {
-    approvalURL: null,
+const initialState = {
+    approvalUrl: null,
     isLoading: false,
     orderId: null,
 };
@@ -25,12 +24,12 @@ const ShoppingOrderSlice = createSlice({
         })
         builder.addCase(createNewOrder.fulfilled, (state, action) => {
             state.isLoading = false;
-            state.approvalURL = action.payload.approvalURL;
+            state.approvalUrl = action.payload.approvalUrl;
             state.orderId = action.payload.orderId;
         })
         builder.addCase(createNewOrder.rejected, (state) => {
             state.isLoading = false;
-            state.approvalURL = null;
+            state.approvalUrl = null;
             state.orderId = null;
         })
     },

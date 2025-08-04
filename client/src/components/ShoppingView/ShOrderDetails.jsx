@@ -40,7 +40,7 @@ const ShOrderDetails = () => {
           <div className="grid gap-2">
             <div className="font-medium">Shipping Info</div>
             <div className="grid gap-0.5 text-muted-foreground">
-              <span>Sarika Mangaonkar</span>
+              <span>Sanket Nagap</span>
               <span>Address</span>
               <span>City</span>
               <span>Pincode</span>
