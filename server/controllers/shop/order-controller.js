@@ -104,9 +104,34 @@ export const createOrder = async (req, res) => {
 
 export const capturePayment = async (req, res) => {
     try {
-        // ...existing code...
+        const {paymentId, payerId, orderId}=req.body;
+
+        let order=await Order.findById(orderId);
+
+        if(!order){
+            return res.status(404).json({
+                success: false,
+                message: "Order not found",
+            });
+        }
+
+        order.paymentStatus='Paid';
+        order.orderStatus='Confirmed';
+        order.paymentId=paymentId;
+        order.payerId=payerId;
+
+        const getCartId=order.cartId;
+        await Cart.findByIdAndDelete(getCartId);
+
+        await order.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Order confirmed",
+            data: order,
+        });
     } catch (error) {
-        console.error("Error creating order:", error);
+        console.error("Error capturing payment:", error);
         res.status(500).json({
             success: false,
             message: "Internal server error while capturing payment",
