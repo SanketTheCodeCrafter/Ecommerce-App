@@ -6,12 +6,15 @@ import Address from '@/components/ShoppingView/Address';
 import UserCartItemsContent from '@/components/ShoppingView/UserCartItemsContent';
 import { Button } from '@/components/ui/button';
 import { createNewOrder } from '@/store/shop/order-slice';
+import { useEffect } from 'react';
 
 const CheckOut = () => {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
   const dispatch = useDispatch();
+  const [isPaymentStart, setIsPaymentStart] = useState(false);
+  const {approvalUrl}=useSelector((state)=>state.shopOrder);
 
   const totalCartAmount = cartItems && cartItems.items && cartItems.items.length > 0 ?
     cartItems.items.reduce((sum, currentItem) =>
@@ -58,7 +61,18 @@ const CheckOut = () => {
 
     dispatch(createNewOrder(orderData)).then((data)=>{
       console.log('Order creation response:', data);
-    })
+
+      if(data?.payload && data?.payload?.success){
+        setIsPaymentStart(true);
+      }else{
+        setIsPaymentStart(false);
+      }
+    });
+  }
+
+  if(approvalUrl){
+    console.log('approvalUrl', approvalUrl);
+    window.location.href = approvalUrl;
   }
 
   return (
