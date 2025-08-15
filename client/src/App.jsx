@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { checkAuth } from "./store/auth-slice";
 import PaypalReturn from "./pages/ShoppingView/PaypalReturn";
+import PaymentSuccess from "./pages/ShoppingView/PaymentSuccess";
 
 
 function App() {
@@ -65,6 +66,7 @@ function App() {
           <Route path="home" element={<Home />} />
           <Route path="listing" element={<Listing />} />
           <Route path="paypal-return" element={<PaypalReturn />} />
+          <Route path="payment-success" element={<PaymentSuccess />} />
         </Route>
         <Route path="*" element={<NotFound />}></Route>
         <Route path="/unauth-page" element={<UnauthPage />}></Route>
@@ -75,4 +77,4 @@ function App() {
 
 export default App
 
-//11.09.19
+//11.15.21

@@ -115,21 +115,34 @@ export const capturePayment = async (req, res) => {
             });
         }
 
-        order.paymentStatus='Paid';
-        order.orderStatus='Confirmed';
-        order.paymentId=paymentId;
-        order.payerId=payerId;
+        // Capture the PayPal order
+        const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(paymentId);
+        request.prefer("return=representation");
+        
+        const capture = await paypalClient.execute(request);
+        
+        if (capture.result.status === 'COMPLETED') {
+            order.paymentStatus='Paid';
+            order.orderStatus='Confirmed';
+            order.paymentId=paymentId;
+            order.payerId=payerId;
 
-        const getCartId=order.cartId;
-        await Cart.findByIdAndDelete(getCartId);
+            const getCartId=order.cartId;
+            await Cart.findByIdAndDelete(getCartId);
 
-        await order.save();
+            await order.save();
 
-        res.status(200).json({
-            success: true,
-            message: "Order confirmed",
-            data: order,
-        });
+            res.status(200).json({
+                success: true,
+                message: "Order confirmed",
+                data: order,
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                message: "Payment capture failed",
+            });
+        }
     } catch (error) {
         console.error("Error capturing payment:", error);
         res.status(500).json({
