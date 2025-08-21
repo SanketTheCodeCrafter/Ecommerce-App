@@ -7,6 +7,7 @@ import UserCartItemsContent from '@/components/ShoppingView/UserCartItemsContent
 import { Button } from '@/components/ui/button';
 import { createNewOrder } from '@/store/shop/order-slice';
 import { useEffect } from 'react';
+import { toast } from 'sonner';
 
 const CheckOut = () => {
   const { cartItems } = useSelector((state) => state.shopCart);
@@ -14,7 +15,7 @@ const CheckOut = () => {
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
   const dispatch = useDispatch();
   const [isPaymentStart, setIsPaymentStart] = useState(false);
-  const {approvalUrl}=useSelector((state)=>state.shopOrder);
+  const { approvalUrl } = useSelector((state) => state.shopOrder);
 
   const totalCartAmount = cartItems && cartItems.items && cartItems.items.length > 0 ?
     cartItems.items.reduce((sum, currentItem) =>
@@ -24,8 +25,13 @@ const CheckOut = () => {
   function handleInitiatePaypalPayment() {
     // console.log('currentSelectedAddress', currentSelectedAddress);
 
-    if (!currentSelectedAddress) {
-      alert("Please select a delivery address before proceeding to checkout.");
+    if (cartItems == null || cartItems.items == null || cartItems.items.length == 0) {
+      toast.warning('No items in cart...');
+      return;
+    }
+
+    if (currentSelectedAddress == null) {
+      toast.warning('Please select an address to proceed...');
       return;
     }
 
@@ -59,18 +65,18 @@ const CheckOut = () => {
 
     console.log('orderData', orderData);
 
-    dispatch(createNewOrder(orderData)).then((data)=>{
+    dispatch(createNewOrder(orderData)).then((data) => {
       console.log('Order creation response:', data);
 
-      if(data?.payload && data?.payload?.success){
+      if (data?.payload && data?.payload?.success) {
         setIsPaymentStart(true);
-      }else{
+      } else {
         setIsPaymentStart(false);
       }
     });
   }
 
-  if(approvalUrl){
+  if (approvalUrl) {
     console.log('approvalUrl', approvalUrl);
     window.location.href = approvalUrl;
   }

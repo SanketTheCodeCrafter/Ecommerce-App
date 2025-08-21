@@ -104,11 +104,11 @@ export const createOrder = async (req, res) => {
 
 export const capturePayment = async (req, res) => {
     try {
-        const {paymentId, payerId, orderId}=req.body;
+        const { paymentId, payerId, orderId } = req.body;
 
-        let order=await Order.findById(orderId);
+        let order = await Order.findById(orderId);
 
-        if(!order){
+        if (!order) {
             return res.status(404).json({
                 success: false,
                 message: "Order not found",
@@ -118,16 +118,16 @@ export const capturePayment = async (req, res) => {
         // Capture the PayPal order
         const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(paymentId);
         request.prefer("return=representation");
-        
-        const capture = await paypalClient.execute(request);
-        
-        if (capture.result.status === 'COMPLETED') {
-            order.paymentStatus='Paid';
-            order.orderStatus='Confirmed';
-            order.paymentId=paymentId;
-            order.payerId=payerId;
 
-            const getCartId=order.cartId;
+        const capture = await paypalClient.execute(request);
+
+        if (capture.result.status === 'COMPLETED') {
+            order.paymentStatus = 'Paid';
+            order.orderStatus = 'Confirmed';
+            order.paymentId = paymentId;
+            order.payerId = payerId;
+
+            const getCartId = order.cartId;
             await Cart.findByIdAndDelete(getCartId);
 
             await order.save();
@@ -152,3 +152,51 @@ export const capturePayment = async (req, res) => {
     }
 }
 
+export const getAllOrdersByUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const orders = await Order.find({ userId });
+
+        if (!orders) {
+            return res.status(404).json({
+                success: false,
+                message: "No orders found",
+            });
+        }
+        res.status(200).json({
+            success: true,
+            data: orders,
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal server error while fetching orders",
+        })
+    }
+}
+
+export const getOrderDetails = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+
+        const order = await Order.findById({ orderId });
+
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: "Order not found",
+            })
+        }
+
+        res.status(200).json({
+            success: true,
+            data: order,
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal server error while fetching order details",
+        })
+    }
+}
