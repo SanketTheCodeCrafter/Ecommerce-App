@@ -178,9 +178,9 @@ export const getAllOrdersByUser = async (req, res) => {
 
 export const getOrderDetails = async (req, res) => {
     try {
-        const { orderId } = req.params;
+        const { id } = req.params;
 
-        const order = await Order.findById({ orderId });
+        const order = await Order.findById(id);
 
         if (!order) {
             return res.status(404).json({

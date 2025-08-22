@@ -74,7 +74,7 @@ const ShoppingOrders = () => {
                         setOpenDetailsDialog(true);
                         fetchOrderDetails(orderItem?._id);
                       }}>View Details</Button>
-                      <ShOrderDetails />
+                      <ShOrderDetails orderDetails={orderDetails}/>
                     </Dialog>
                   </TableCell>
                 </TableRow>
