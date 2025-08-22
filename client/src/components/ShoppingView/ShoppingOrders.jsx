@@ -5,7 +5,7 @@ import { Button } from '../ui/button'
 import { Dialog } from '../ui/dialog'
 import ShOrderDetails from './ShOrderDetails'
 import { useDispatch, useSelector } from 'react-redux'
-import { getAllOrdersByUser, getOrderDetails } from '@/store/shop/order-slice'
+import { getAllOrdersByUser, getOrderDetails, resetOrderDetails } from '@/store/shop/order-slice'
 import { Badge } from '../ui/badge'
 
 const ShoppingOrders = () => {
@@ -21,6 +21,12 @@ const ShoppingOrders = () => {
   useEffect(() => {
     dispatch(getAllOrdersByUser(user.id));
   }, [dispatch, user?.id])
+
+  useEffect(()=>{
+    if(orderDetails!==null){
+      setOpenDetailsDialog(true);
+    }
+  }, [orderDetails]);
 
   // console.log(orderList, 'orderList')
 
@@ -59,7 +65,11 @@ const ShoppingOrders = () => {
                   </TableCell>
                   <TableCell>${orderItem?.totalAmount}</TableCell>
                   <TableCell>
-                    <Dialog open={openDetailsDialog} onOpenChange={setOpenDetailsDialog}>
+                    <Dialog 
+                      open={openDetailsDialog} onOpenChange={()=>{
+                      setOpenDetailsDialog(false);
+                      dispatch(resetOrderDetails());
+                    }}>
                       <Button onClick={() => {
                         setOpenDetailsDialog(true);
                         fetchOrderDetails(orderItem?._id);
