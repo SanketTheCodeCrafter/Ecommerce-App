@@ -1,17 +1,39 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Table, TableHead, TableHeader, TableRow, TableBody, TableCell } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
+import { useDispatch, useSelector } from 'react-redux'
+import { getAllOrdersForAdmin, getOrderDetailsForAdmin, resetOrderDetails } from '@/store/admin/order-slice'
 import AdOrderDetails from './AdOrderDetails'
+import { Badge } from '../ui/badge'
 
 const AdminOrderView = () => {
-  const [openDetailsDailog, setOpenDetailsDialog] = useState(false);
+  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const { orderList, orderDetails, isLoading } = useSelector((state) => state.adminOrder);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // console.log('Dispatching getAllOrdersForAdmin...');
+    dispatch(getAllOrdersForAdmin());
+  }, [dispatch]);
+
+  const handleFetchOrderDetails = (orderId) => {
+    dispatch(getOrderDetailsForAdmin(orderId));
+  };
+
+  // console.log('orderDetails:', orderDetails);
+  // console.log('isLoading:', isLoading);
+
+  useEffect(() => {
+    if (orderDetails !== null) setOpenDetailsDialog(true);
+  }, [orderDetails]);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Order History</CardTitle>
+        <CardTitle>All Orders</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
@@ -27,22 +49,45 @@ const AdminOrderView = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
-              <TableCell>12345</TableCell>
-              <TableCell>27/07/2025</TableCell>
-              <TableCell>In Process</TableCell>
-              <TableCell>$1000</TableCell>
-              <TableCell>
-                <Dialog open={openDetailsDailog} onOpenChange={setOpenDetailsDialog}>
-                  <DialogTrigger asChild>
-                    <Button
-                      onClick={()=> setOpenDetailsDialog(true)}
-                    >View Details</Button>
-                  </DialogTrigger>
-                  <AdOrderDetails />
-                </Dialog>
-              </TableCell>
-            </TableRow>
+            {orderList && orderList.length > 0 ? orderList.map((orderItem) => (
+              <TableRow key={orderItem._id}>
+                <TableCell>{orderItem?._id}</TableCell>
+                <TableCell>{orderItem?.orderDate ? orderItem.orderDate.split("T")[0] : 'N/A'}</TableCell>
+                <TableCell>
+                  <Badge className={`py-1 px-3 
+                    ${orderItem?.orderStatus === "Confirmed" ? "bg-green-500" :
+                      orderItem?.orderStatus === 'Rejected' ? "bg-red-600" : "bg-black"}`}>
+                    {orderItem?.orderStatus}
+                  </Badge>
+                </TableCell>
+                <TableCell>${orderItem?.totalAmount}</TableCell>
+                <TableCell>
+                  <Dialog
+                    open={openDetailsDialog && selectedOrderId === orderItem._id}
+                    onOpenChange={() => {
+                      setOpenDetailsDialog(false);
+                      dispatch(resetOrderDetails())
+                    }}>
+                    <DialogTrigger asChild>
+                      <Button onClick={() => {
+                        setSelectedOrderId(orderItem._id);
+                        setOpenDetailsDialog(true);
+                        handleFetchOrderDetails(orderItem?._id)
+                      }}>
+                        View Details
+                      </Button>
+                    </DialogTrigger>
+                    <AdOrderDetails orderDetails={orderDetails} />
+                  </Dialog>
+                </TableCell>
+              </TableRow>
+            )) : (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-8">
+                  {isLoading ? 'Loading orders...' : 'No orders found'}
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </CardContent>

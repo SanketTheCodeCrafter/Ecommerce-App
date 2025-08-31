@@ -2,48 +2,89 @@ import { DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { Label } from '@radix-ui/react-label'
 import React, { useState } from 'react'
 import { Separator } from '../ui/separator'
+import { Badge } from '../ui/badge'
 import Form from '../CommonCompo/Form'
+import { useSelector } from 'react-redux'
 
-const initialFormData={
+const initialFormData = {
   status: "",
 };
 
-const AdOrderDetails = () => {
-  const [formData, setFormData]=useState(initialFormData);
+const AdOrderDetails = ({ orderDetails }) => {
+  const [formData, setFormData] = useState(initialFormData);
+  const { user } = useSelector((state) => state.auth);
 
-  function handleUpdateStatus(e){
+  function handleUpdateStatus(e) {
     e.preventDefault();
+  }
+
+  // Add a guard clause to prevent rendering if orderDetails is null
+  if (!orderDetails) {
+    return (
+      <DialogContent className='sm:max-w-[600px]'>
+        <div className="text-center py-8">
+          <p>Loading order details...</p>
+        </div>
+      </DialogContent>
+    );
   }
 
   return (
     <DialogContent className='sm:max-w-[600px]'>
       <div className="grid gap-6">
-        <div className="flex mt-6 items-center justify-between">
-          <DialogTitle>Order ID</DialogTitle>
-          <Label>1234</Label>
-        </div>
-        <div className="flex mt-2 items-center justify-between">
-          <p className='font-medium'>Order Date</p>
-          <Label>27/07/2025</Label>
-        </div>
-        <div className="flex mt-2 items-center justify-between">
-          <p className='font-medium'>Order Price</p>
-          <Label>$200</Label>
-        </div>
-        <div className="flex mt-2 items-center justify-between">
-          <p className='font-medium'>Order Date</p>
-          <Label>In Process</Label>
+        <div className="grid gap-2">
+          <div className="flex mt-6 items-center justify-between">
+            <p className="font-medium">Order ID</p>
+            <Label>{orderDetails?._id}</Label>
+          </div>
+          <div className="flex mt-2 items-center justify-between">
+            <p className="font-medium">Order Date</p>
+            <Label>
+              {orderDetails?.orderDate ? orderDetails.orderDate.split("T")[0] : 'N/A'}
+            </Label>
+          </div>
+          <div className="flex mt-2 items-center justify-between">
+            <p className="font-medium">Order Price</p>
+            <Label>${orderDetails?.totalAmount}</Label>
+          </div>
+          <div className="flex mt-2 items-center justify-between">
+            <p className="font-medium">Payment method</p>
+            <Label>{orderDetails?.paymentMethod}</Label>
+          </div>
+          <div className="flex mt-2 items-center justify-between">
+            <p className="font-medium">Payment Status</p>
+            <Label>{orderDetails?.paymentStatus}</Label>
+          </div>
+          <div className="flex mt-2 items-center justify-between">
+            <p className="font-medium">Order Status</p>
+            <Label>
+              <Badge
+                className={`py-1 px-3 ${orderDetails?.orderStatus === "Confirmed"
+                  ? "bg-green-500"
+                  : orderDetails?.orderStatus === "Rejected"
+                    ? "bg-red-600"
+                    : "bg-black"
+                  }`}
+              >
+                {orderDetails?.orderStatus}
+              </Badge>
+            </Label>
+          </div>
         </div>
         <Separator />
         <div className="grid gap-4">
           <div className="grid gap-2">
             <div className="font-medium">Order Details</div>
-            <ul className='grid gap-3'>
-              <li className='flex items-center justify-between'>
-                <span>Product one</span>
-                <span>Quantity</span>
-                <span>Price</span>
-              </li>
+            <ul className="grid gap-3">
+              {orderDetails?.cartItems && orderDetails?.cartItems.length > 0
+                ? orderDetails?.cartItems.map((item, index) => (
+                  <li key={index} className="flex items-center justify-between">
+                    <span>Title: {item.title}</span>
+                    <span>Quantity: {item.quantity}</span>
+                    <span>Price: ${item.price}</span>
+                  </li>
+                ))
+                : <li>No items found</li>}
             </ul>
           </div>
         </div>
@@ -51,18 +92,15 @@ const AdOrderDetails = () => {
           <div className="grid gap-2">
             <div className="font-medium">Shipping Info</div>
             <div className="grid gap-0.5 text-muted-foreground">
-              <span>Sanket Nagap</span>
-              <span>Address</span>
-              <span>City</span>
-              <span>Pincode</span>
-              <span>Phone</span>
-              <span>Notes</span>
+              <span>{user?.userName}</span>
+              <span>{orderDetails?.addressInfo?.address}</span>
+              <span>{orderDetails?.addressInfo?.city}</span>
+              <span>{orderDetails?.addressInfo?.pincode}</span>
+              <span>{orderDetails?.addressInfo?.phone}</span>
+              <span>{orderDetails?.addressInfo?.notes}</span>
             </div>
           </div>
-        </div>
-
-        <div>
-          <Form 
+          <Form
             formControls={[
               {
                 label: "Order Status",
@@ -81,9 +119,7 @@ const AdOrderDetails = () => {
             setFormData={setFormData}
             buttonText={'Update Order Status'}
             onSubmit={handleUpdateStatus}
-          >
-
-          </Form>
+          />
         </div>
       </div>
     </DialogContent>

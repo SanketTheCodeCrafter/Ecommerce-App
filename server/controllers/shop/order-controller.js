@@ -85,6 +85,7 @@ export const createOrder = async (req, res) => {
         });
 
         await newlyCreatedOrder.save();
+        console.log('Order saved successfully:', newlyCreatedOrder._id);
 
         res.status(201).json({
             success: true,
