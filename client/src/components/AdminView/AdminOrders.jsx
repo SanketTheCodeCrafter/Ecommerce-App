@@ -55,9 +55,15 @@ const AdminOrderView = () => {
                 <TableCell>{orderItem?.orderDate ? orderItem.orderDate.split("T")[0] : 'N/A'}</TableCell>
                 <TableCell>
                   <Badge className={`py-1 px-3 
-                    ${orderItem?.orderStatus === "Confirmed" ? "bg-green-500" :
-                      orderItem?.orderStatus === 'Rejected' ? "bg-red-600" : "bg-black"}`}>
-                    {orderItem?.orderStatus}
+                     ${orderItem?.orderStatus?.toLowerCase() === "confirmed" ? "bg-green-500" :
+                      orderItem?.orderStatus?.toLowerCase() === "rejected" ? "bg-red-600" :
+                        orderItem?.orderStatus?.toLowerCase() === "delivered" ? "bg-blue-500" :
+                          orderItem?.orderStatus?.toLowerCase() === "inprocess" || orderItem?.orderStatus?.toLowerCase() === "in process" ? "bg-yellow-500" :
+                            orderItem?.orderStatus?.toLowerCase() === "inshipping" || orderItem?.orderStatus?.toLowerCase() === "in shipping" ? "bg-purple-500" :
+                              "bg-gray-500"}`}>
+                    {orderItem?.orderStatus ?
+                      orderItem.orderStatus.charAt(0).toUpperCase() + orderItem.orderStatus.slice(1).toLowerCase()
+                      : 'N/A'}
                   </Badge>
                 </TableCell>
                 <TableCell>${orderItem?.totalAmount}</TableCell>

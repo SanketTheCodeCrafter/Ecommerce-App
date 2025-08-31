@@ -4,7 +4,9 @@ import React, { useState } from 'react'
 import { Separator } from '../ui/separator'
 import { Badge } from '../ui/badge'
 import Form from '../CommonCompo/Form'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { getAllOrdersForAdmin, getOrderDetailsForAdmin, updateOrderStatus } from '@/store/admin/order-slice'
+import { toast } from 'sonner'
 
 const initialFormData = {
   status: "",
@@ -13,9 +15,22 @@ const initialFormData = {
 const AdOrderDetails = ({ orderDetails }) => {
   const [formData, setFormData] = useState(initialFormData);
   const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
   function handleUpdateStatus(e) {
     e.preventDefault();
+    const { status } = formData;
+
+    dispatch(
+      updateOrderStatus({ id: orderDetails?._id, orderStatus: status })
+    ).then((data) => {
+      if (data?.payload?.success) {
+        dispatch(getOrderDetailsForAdmin(orderDetails?._id));
+        dispatch(getAllOrdersForAdmin());
+        setFormData(initialFormData);
+        toast.info(data?.payload?.message)
+      }
+    })
   }
 
   // Add a guard clause to prevent rendering if orderDetails is null
@@ -59,14 +74,17 @@ const AdOrderDetails = ({ orderDetails }) => {
             <p className="font-medium">Order Status</p>
             <Label>
               <Badge
-                className={`py-1 px-3 ${orderDetails?.orderStatus === "Confirmed"
-                  ? "bg-green-500"
-                  : orderDetails?.orderStatus === "Rejected"
-                    ? "bg-red-600"
-                    : "bg-black"
-                  }`}
+                className={`py-1 px-3 
+                  ${orderDetails?.orderStatus?.toLowerCase() === "confirmed" ? "bg-green-500" :
+                    orderDetails?.orderStatus?.toLowerCase() === "rejected" ? "bg-red-600" :
+                      orderDetails?.orderStatus?.toLowerCase() === "delivered" ? "bg-blue-500" :
+                        orderDetails?.orderStatus?.toLowerCase() === "inprocess" || orderDetails?.orderStatus?.toLowerCase() === "in process" ? "bg-yellow-500" :
+                          orderDetails?.orderStatus?.toLowerCase() === "inshipping" || orderDetails?.orderStatus?.toLowerCase() === "in shipping" ? "bg-purple-500" :
+                            "bg-gray-500"}`}
               >
-                {orderDetails?.orderStatus}
+                {orderDetails?.orderStatus ?
+                  orderDetails.orderStatus.charAt(0).toUpperCase() + orderDetails.orderStatus.slice(1).toLowerCase()
+                  : 'N/A'}
               </Badge>
             </Label>
           </div>

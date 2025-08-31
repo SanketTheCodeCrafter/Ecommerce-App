@@ -28,8 +28,6 @@ const ShoppingOrders = () => {
     }
   }, [orderDetails]);
 
-  // console.log(orderList, 'orderList')
-
   return (
     <Card>
       <CardHeader>
@@ -49,37 +47,45 @@ const ShoppingOrders = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-
-            {orderList && orderList.length > 0 ? orderList.map((orderItem) => {
-              return (
-
-                <TableRow>
-                  <TableCell>{orderItem?._id}</TableCell>
-                  <TableCell>{orderItem?.orderDate.split("T")[0]}</TableCell>
-                  <TableCell>
-                    <Badge className={`py-1 px-3 
-                  ${orderItem?.orderStatus === "Confirmed" ? "bg-green-500" :
-                        orderItem?.orderStatus === 'Rejected' ? "bg-red-600" : "bg-black"}`}>
-                      {orderItem?.orderStatus}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>${orderItem?.totalAmount}</TableCell>
-                  <TableCell>
-                    <Dialog 
-                      open={openDetailsDialog} onOpenChange={()=>{
+            {orderList && orderList.length > 0 ? orderList.map((orderItem) => (
+              <TableRow key={orderItem._id}>
+                <TableCell>{orderItem?._id}</TableCell>
+                <TableCell>{orderItem?.orderDate ? orderItem.orderDate.split("T")[0] : 'N/A'}</TableCell>
+                <TableCell>
+                  <Badge className={`py-1 px-3 
+                    ${orderItem?.orderStatus?.toLowerCase() === "confirmed" ? "bg-green-500" :
+                      orderItem?.orderStatus?.toLowerCase() === "rejected" ? "bg-red-600" : 
+                      orderItem?.orderStatus?.toLowerCase() === "delivered" ? "bg-blue-500" :
+                      orderItem?.orderStatus?.toLowerCase() === "inprocess" || orderItem?.orderStatus?.toLowerCase() === "in process" ? "bg-yellow-500" :
+                      orderItem?.orderStatus?.toLowerCase() === "inshipping" || orderItem?.orderStatus?.toLowerCase() === "in shipping" ? "bg-purple-500" :
+                      "bg-gray-500"}`}>
+                    {orderItem?.orderStatus ?
+                      orderItem.orderStatus.charAt(0).toUpperCase() + orderItem.orderStatus.slice(1).toLowerCase()
+                      : 'N/A'}
+                  </Badge>
+                </TableCell>
+                <TableCell>${orderItem?.totalAmount}</TableCell>
+                <TableCell>
+                  <Dialog 
+                    open={openDetailsDialog} onOpenChange={()=>{
                       setOpenDetailsDialog(false);
                       dispatch(resetOrderDetails());
                     }}>
-                      <Button onClick={() => {
-                        setOpenDetailsDialog(true);
-                        fetchOrderDetails(orderItem?._id);
-                      }}>View Details</Button>
-                      <ShOrderDetails orderDetails={orderDetails}/>
-                    </Dialog>
-                  </TableCell>
-                </TableRow>
-              )
-            }) : null}
+                    <Button onClick={() => {
+                      setOpenDetailsDialog(true);
+                      fetchOrderDetails(orderItem?._id);
+                    }}>View Details</Button>
+                    <ShOrderDetails orderDetails={orderDetails}/>
+                  </Dialog>
+                </TableCell>
+              </TableRow>
+            )) : (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-8">
+                  {isLoading ? 'Loading orders...' : 'No orders found'}
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </CardContent>
