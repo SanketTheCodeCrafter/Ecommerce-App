@@ -147,6 +147,9 @@ const Listing = () => {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails])
 
+  console.log('productlist:', productList);
+  
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 p-3 md:p-4 bg-muted/30">
       <Filter filter={filter} handleFilter={handleFilter} />
