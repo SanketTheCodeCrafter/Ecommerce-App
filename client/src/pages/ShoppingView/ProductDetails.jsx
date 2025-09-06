@@ -12,9 +12,9 @@ import { addToCart, fetchCartItems } from '@/store/shop/cart-slice'
 import { setProductDetails } from '@/store/shop/product-slice'
 
 const ProductDetails = ({ open, setOpen, productDetails }) => {
-    
+
     const dispatch = useDispatch();
-    const {user} = useSelector(state => state.auth);
+    const { user } = useSelector(state => state.auth);
 
     function handleAddToCart(getCurrentProductId) {
         console.log(getCurrentProductId, 'getCurrentProductId')
@@ -37,7 +37,7 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
         })
     }
 
-    function handleDialogClose(){
+    function handleDialogClose() {
         setOpen(false);
         dispatch(setProductDetails());
     }
@@ -88,9 +88,24 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
                     </div>
 
                     <div className="mt-5">
-                        <Button className={'w-full'} onClick={() => handleAddToCart(productDetails?._id)}>
-                            Add to Cart
-                        </Button>
+                        {productDetails?.totalStock === 0 ? (
+                            <Button className="w-full opacity-60 cursor-not-allowed">
+                                Out of Stock
+                            </Button>
+                        ) : (
+                            <Button
+                                className="w-full"
+                                onClick={() =>
+                                    handleAddToCart(
+                                        productDetails?._id,
+                                        productDetails?.totalStock
+                                    )
+                                }
+                            >
+                                Add to Cart
+                            </Button>
+                        )}
+
                     </div>
                     <Separator />
 
