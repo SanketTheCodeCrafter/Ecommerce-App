@@ -39,6 +39,8 @@ const Listing = () => {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const { user } = useSelector((state)=>state.auth)
   const location = useLocation();
+  const {cartItems}=useSelector((state)=>state.shopCart);
+  const cartItemsArray = cartItems?.items || [];
 
   function handleSort(value) {
     console.log(value)
@@ -77,8 +79,22 @@ const Listing = () => {
     dispatch(fetchProductDetails(productId))
   }
 
-  function handleAddToCart(getCurrentProductId){
-    console.log(getCurrentProductId, 'getCurrentProductId')
+  function handleAddToCart(getCurrentProductId, getTotalStock){
+    const getCartItems = cartItemsArray;
+
+    if(getCartItems.length){
+      const indexOfCurrentCartItem = getCartItems.findIndex(
+        (item)=>item.productId===getCurrentProductId
+      );
+      if(indexOfCurrentCartItem>-1){
+        const getQuantity = getCartItems[indexOfCurrentCartItem].quantity;
+        if(typeof getTotalStock === 'number' && getQuantity + 1 > getTotalStock){
+          toast.warning(`Only ${getQuantity} items left in stock`)
+          return;
+        }
+      }
+    }
+    
     dispatch(addToCart({
       userId: user?.id,
       productId: getCurrentProductId,
@@ -97,13 +113,16 @@ const Listing = () => {
     })
   }
 
-  // console.log(cartItems, "cartItems")
 
 
-  // Set default sort ONCE on mount
+  // Set default sort ONCE on mount and fetch cart items
   useEffect(() => {
     setSort('price-lowtohigh');
-  }, []);
+    // Fetch cart items when component mounts if user is logged in
+    if (user?.id) {
+      dispatch(fetchCartItems(user.id));
+    }
+  }, [user?.id, dispatch]);
 
   // On mount or location change, set filter from searchParams (URL is source of truth)
   useEffect(() => {
@@ -147,7 +166,7 @@ const Listing = () => {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails])
 
-  console.log('productlist:', productList);
+
   
 
   return (

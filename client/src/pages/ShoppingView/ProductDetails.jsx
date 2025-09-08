@@ -15,10 +15,27 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
 
     const dispatch = useDispatch();
     const { user } = useSelector(state => state.auth);
+    const { cartItems } = useSelector((state) => state.shopCart);
+    const cartItemsArray = cartItems?.items || [];
 
-    function handleAddToCart(getCurrentProductId) {
-        console.log(getCurrentProductId, 'getCurrentProductId')
-        console.log(user, 'user')
+    function handleAddToCart(getCurrentProductId, getTotalStock) {
+        // console.log(getCurrentProductId, 'getCurrentProductId')
+        // console.log(user, 'user')
+
+        const getCartItems = cartItemsArray;
+
+        if (getCartItems.length) {
+            const indexOfCurrentCartItem = getCartItems.findIndex(
+                (item) => item.productId === getCurrentProductId
+            );
+            if (indexOfCurrentCartItem > -1) {
+                const getQuantity = getCartItems[indexOfCurrentCartItem].quantity;
+                if (typeof getTotalStock === 'number' && getQuantity + 1 > getTotalStock) {
+                    toast.warning(`Only ${getQuantity} items left in stock`)
+                    return;
+                }
+            }
+        }
         dispatch(addToCart({
             userId: user?.id,
             productId: getCurrentProductId,

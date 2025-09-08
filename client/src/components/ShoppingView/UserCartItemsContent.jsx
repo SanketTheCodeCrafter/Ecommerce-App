@@ -22,23 +22,18 @@ const UserCartItemsContent = ({ cartItem }) => {
   }
 
   function handleUpdateQuantity(getCartItem, typeOfAction) {
-    if (typeOfAction == 'increase') {
-      let getCartItems = cartItems.items || [];
+    if (typeOfAction === 'increase') {
+      const getCartItems = cartItems?.items || [];
 
       if (getCartItems.length) {
         const indexOfCurrentCartItem = getCartItems.findIndex((item) => item.productId === getCartItem?.productId);
-        // console.log(indexOfCurrentCartItem, 'indexOfCurrentCartItem')
 
-        const getCurrentProductIndex = productList.findIndex((product) => product._id === getCartItem?.productId);
-        // console.log(getCurrentProductIndex, 'getCurrentProductIndex')
-
-        const getTotalStock = productList[getCurrentProductIndex].totalStock;
-
-        console.log(getCurrentProductIndex, getTotalStock, 'getTotalStock');
+        const currentProduct = productList.find((product) => product._id === getCartItem?.productId);
+        const getTotalStock = currentProduct?.totalStock;
 
         if (indexOfCurrentCartItem > -1) {
           const getQuantity = getCartItems[indexOfCurrentCartItem].quantity;
-          if (getQuantity + 1 > getTotalStock) {
+          if (typeof getTotalStock === 'number' && getQuantity + 1 > getTotalStock) {
             toast.warning(`Only ${getQuantity} items left in stock`)
             return;
           }

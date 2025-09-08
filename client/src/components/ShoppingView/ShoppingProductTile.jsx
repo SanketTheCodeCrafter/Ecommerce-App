@@ -56,7 +56,7 @@ const ShoppingProductTile = ({product, handleGetProductDetails, handleAddToCart}
                 </Button>
             ): (
                 <Button 
-                onClick={()=>handleAddToCart(product?._id)}
+                onClick={()=>handleAddToCart(product?._id, product?.totalStock)}
                 className={'w-full bg-primary hover:bg-primary/90 text-white'}>
                     Add to Cart
                 </Button>
