@@ -21,6 +21,7 @@ import { useEffect } from "react";
 import { checkAuth } from "./store/auth-slice";
 import PaypalReturn from "./pages/ShoppingView/PaypalReturn";
 import PaymentSuccess from "./pages/ShoppingView/PaymentSuccess";
+import Search from "./pages/ShoppingView/Search";
 
 
 function App() {
@@ -67,6 +68,7 @@ function App() {
           <Route path="listing" element={<Listing />} />
           <Route path="paypal-return" element={<PaypalReturn />} />
           <Route path="payment-success" element={<PaymentSuccess />} />
+          <Route path='search' element={<Search/>} />
         </Route>
         <Route path="*" element={<NotFound />}></Route>
         <Route path="/unauth-page" element={<UnauthPage />}></Route>
@@ -77,4 +79,4 @@ function App() {
 
 export default App
 
-//12.44.09
+//12.55.34
