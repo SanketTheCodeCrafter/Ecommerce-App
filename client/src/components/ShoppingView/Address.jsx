@@ -15,7 +15,7 @@ const initialAddressFormData = {
     notes: "",
 };
 
-const Address = ({setCurrentSelectedAddress}) => {
+const Address = ({currentSelectedAddress, setCurrentSelectedAddress}) => {
     const [formData, setFormData] = useState(initialAddressFormData);
     const dispatch = useDispatch();
     const { user } = useSelector(state => state.auth);
@@ -101,6 +101,7 @@ const Address = ({setCurrentSelectedAddress}) => {
                         handleDeleteAddress={handleDeleteAddress}
                         handleEditAddress={handleEditAddress}
                         addressInfo={singleAddressItem} key={singleAddressItem._id} 
+                        isSelected={currentSelectedAddress?._id === singleAddressItem._id}
                         setCurrentSelectedAddress={setCurrentSelectedAddress}
                         />
                 )) : null}
