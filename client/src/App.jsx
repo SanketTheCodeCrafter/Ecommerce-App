@@ -53,10 +53,13 @@ function App() {
         <Route path="/admin" element={<CheckAuth isAuthenticated={isAuthenticated} user={user} >
           <AdminLayout />
         </CheckAuth>}>
+          <Route index element={<Navigate to="/admin/products" replace />} />
           <Route path="features" element={<Features />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="products" element={<Products />} />
         </Route>
+        {/* Backward compatibility: redirect old dashboard path */}
+        <Route path="/admin/dashboard" element={<Navigate to="/admin/products" replace />} />
         <Route path="/shop" element={<CheckAuth isAuthenticated={isAuthenticated} user={user} >
           <ShopLayout />
         </CheckAuth>}>
