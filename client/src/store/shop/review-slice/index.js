@@ -6,18 +6,34 @@ const initialState = {
     reviews: [],
 };
 
-export const addReview = createAsyncThunk('/order/addRevies', async (formdata) => {
-    const response = await axios.post(`http://localhost:5000/api/shop/review/add`,
-        formdata);
+export const addReview = createAsyncThunk(
+    '/order/addReview',
+    async (formdata, { rejectWithValue }) => {
+        try {
+            const response = await axios.post(
+                `http://localhost:5000/api/shop/review/add`,
+                formdata
+            );
+            return response.data;
+        } catch (error) {
+            const message = error?.response?.data?.message || 'Failed to add review';
+            return rejectWithValue({ message });
+        }
+    }
+)
 
-    return response.data;
-})
-
-export const getReviews = createAsyncThunk('/order/getReviews', async (id) => {
-    const response = await axios.get(`http://localhost:5000/api/shop/review/${id}`);
-
-    return response.data;
-});
+export const getReviews = createAsyncThunk(
+    '/order/getReviews',
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axios.get(`http://localhost:5000/api/shop/review/${id}`);
+            return response.data;
+        } catch (error) {
+            const message = error?.response?.data?.message || 'Failed to fetch reviews';
+            return rejectWithValue({ message });
+        }
+    }
+);
 
 const reviewSlie = createSlice({
     name: 'reviewSlice',
