@@ -41,7 +41,7 @@ function MenuItems() {
 
 
 
-function HeaderRightContent() {
+function HeaderRightContent({ compact = false }) {
   const { user } = useSelector((state) => state.auth);
   const [openCartSheet, setOpenCartSheet] = useState(false);
   const navigate = useNavigate();
@@ -56,7 +56,7 @@ function HeaderRightContent() {
   }, [dispatch]);
 
   return (
-    <div className="flex lg:items-center lg:flex-row flex-col gap-4">
+    <div className={`flex ${compact ? 'items-center flex-row gap-3' : 'lg:items-center lg:flex-row flex-col gap-4'}`}>
       <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
         <div className='relative'>
           <Button
@@ -82,22 +82,30 @@ function HeaderRightContent() {
             </AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
-        <DropdownMenuContent side='right' className='w-56 bg-white rounded-lg shadow-xl border'>
-          <DropdownMenuLabel className='text-slate-700'>Logged in as {user?.userName}</DropdownMenuLabel>
+        <DropdownMenuContent side='right' align='end' className='w-64 bg-white rounded-xl shadow-lg border p-2'>
+          <div className='px-2 py-2 flex items-center gap-3'>
+            <div className='h-9 w-9 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-semibold'>
+              {user?.userName?.[0]?.toUpperCase() || ""}
+            </div>
+            <div className='min-w-0'>
+              <div className='text-sm font-medium text-slate-800 truncate'>{user?.userName}</div>
+              <div className='text-xs text-slate-500 truncate'>Signed in</div>
+            </div>
+          </div>
           <DropdownMenuSeparator className="my-2 h-px bg-gray-100" />
 
-          <DropdownMenuItem className="hover:bg-gray-100 cursor-pointer flex items-center"
+          <DropdownMenuItem className="cursor-pointer flex items-center gap-2 rounded-md px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 focus:bg-slate-50"
             onClick={() => navigate('/shop/account')}
           >
-            <UserCog className='mr-2 h-4 w-4' />
-            Account
+            <UserCog className='h-4 w-4 text-slate-500' />
+            <span>Account</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator className="my-2 h-px bg-gray-100" />
-          <DropdownMenuItem className="hover:bg-gray-100 cursor-pointer flex items-center"
+          <DropdownMenuItem className="cursor-pointer flex items-center gap-2 rounded-md px-3 py-2 text-sm text-red-700 hover:bg-red-50 focus:bg-red-50"
             onClick={handleLogout}
           >
-            <LogOutIcon className='mr-2 h-4 w-4' />
-            Logout
+            <LogOutIcon className='h-4 w-4' />
+            <span>Logout</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -124,9 +132,23 @@ function Header() {
               <span className='sr-only'>Toggle header menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side='left' className={'w-full max-w-5xl'}>
-            <MenuItems />
-            <HeaderRightContent />
+          <SheetContent side='left' className={'w-full max-w-sm p-0'}>
+            <div className="flex h-full flex-col">
+              <div className="px-5 py-4 border-b">
+                <div className='text-sm font-semibold text-slate-800'>Menu</div>
+              </div>
+              <div className="flex-1 overflow-y-auto px-5 py-4">
+                <MenuItems />
+              </div>
+              <div className="border-t px-5 py-4">
+                <div className='flex items-center justify-between'>
+                  <div className='text-sm text-slate-600'>Quick actions</div>
+                </div>
+                <div className='mt-3'>
+                  <HeaderRightContent compact={true} />
+                </div>
+              </div>
+            </div>
           </SheetContent>
         </Sheet>
 
