@@ -88,17 +88,23 @@ const Home = () => {
   // console.log(productList)
   return (
     <div className='flex flex-col min-h-screen'>
-      <div className="relative w-full h-[600px] overflow-hidden">
+      <div className="relative w-full h-52 sm:h-64 md:h-80 lg:h-[500px] xl:h-[600px] overflow-hidden">
         {slides.map((slide, index) => (
-          <img src={slide} key={index}
-            className={`absolute top-0 left-0 w-full h-full object-cover ${index === currentSlide ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500`} />
+          <img
+            key={index}
+            src={slide}
+            alt={`PikaShop banner ${index + 1}`}
+            loading={index === 0 ? 'eager' : 'lazy'}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
+            className={`absolute top-0 left-0 w-full h-full object-cover object-center ${index === currentSlide ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500`}
+          />
         ))}
-        <Button variant={'outline'} className={'absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80'}
+        <Button variant={'outline'} className={'hidden sm:flex absolute top-1/2 left-4 -translate-y-1/2 bg-white/80'}
           onClick={() => setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length)}
         >
           <ChevronLeftIcon className='w-6 h-6' />
         </Button>
-        <Button variant={'outline'} className={'absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/80'}
+        <Button variant={'outline'} className={'hidden sm:flex absolute top-1/2 right-4 -translate-y-1/2 bg-white/80'}
           onClick={() => setCurrentSlide((prevSlide) => (prevSlide - 1 + slides.length) % slides.length)}
         >
           <ChevronRightIcon className='w-6 h-6' />
