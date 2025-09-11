@@ -4,7 +4,6 @@ import AuthLayout from "./components/Auth/AuthLayout";
 import AuthLogin from "./pages/Auth/AuthLogin";
 import AuthRegister from "./pages/Auth/AuthRegister";
 import AdminLayout from "./components/AdminView/AdminLayout";
-import Dashboard from "./pages/AdminView/Dashboard";
 import Features from "./pages/AdminView/Features";
 import AdminOrders from './pages/AdminView/Order';
 import Products from "./pages/AdminView/Products";
@@ -54,7 +53,6 @@ function App() {
         <Route path="/admin" element={<CheckAuth isAuthenticated={isAuthenticated} user={user} >
           <AdminLayout />
         </CheckAuth>}>
-          <Route path="dashboard" element={<Dashboard />} />
           <Route path="features" element={<Features />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="products" element={<Products />} />
