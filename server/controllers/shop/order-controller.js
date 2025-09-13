@@ -59,8 +59,8 @@ export const createOrder = async (req, res) => {
                 }))
             }],
             application_context: {
-                return_url: process.env.FRONTEND_URL + "/shop/paypal-return",
-                cancel_url: process.env.FRONTEND_URL + "/shop/paypal-cancel"
+                return_url: process.env.FRONTEND_URL + "/paypal-return",
+                cancel_url: process.env.FRONTEND_URL + "/paypal-cancel"
             }
         });
 
