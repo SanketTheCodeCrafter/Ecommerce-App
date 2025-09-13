@@ -1,15 +1,13 @@
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { capturePayment } from '@/store/shop/order-slice';
-import { checkAuth } from '@/store/auth-slice';
 import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const PaypalReturn = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, user, isLoading } = useSelector((state) => state.auth);
   const [isProcessing, setIsProcessing] = useState(false);
   
   const params = new URLSearchParams(location.search);
@@ -18,26 +16,6 @@ const PaypalReturn = () => {
 
   useEffect(() => {
     const processPayment = async () => {
-      // Wait for authentication to be checked
-      if (isLoading) return;
-
-      // If not authenticated, try to check auth first
-      if (!isAuthenticated) {
-        try {
-          const authResult = await dispatch(checkAuth());
-          if (!authResult.payload?.success) {
-            console.error('Authentication failed');
-            navigate('/auth/login');
-            return;
-          }
-        } catch (error) {
-          console.error('Auth check error:', error);
-          navigate('/auth/login');
-          return;
-        }
-      }
-
-      // Now process the payment
       if (token && payerId && !isProcessing) {
         setIsProcessing(true);
         
@@ -74,25 +52,15 @@ const PaypalReturn = () => {
     };
 
     processPayment();
-  }, [isAuthenticated, isLoading, token, payerId, dispatch, navigate, isProcessing]);
-
-  if (isLoading || isProcessing) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="w-96">
-          <CardHeader>
-            <CardTitle className="text-center">Processing your Payment...</CardTitle>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
+  }, [token, payerId, dispatch, navigate, isProcessing]);
 
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Card className="w-96">
         <CardHeader>
-          <CardTitle className="text-center">Redirecting...</CardTitle>
+          <CardTitle className="text-center">
+            {isProcessing ? 'Processing your Payment...' : 'Redirecting...'}
+          </CardTitle>
         </CardHeader>
       </Card>
     </div>

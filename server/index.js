@@ -28,14 +28,13 @@ mongoose.connect(process.env.MONGO_URL)
     });
 
 
-const allowedOrigins = [
-    'http://localhost:5173',
-    process.env.FRONTEND_URL,  // Production frontend URL
-].filter(Boolean);
-
+// Update the CORS configuration:
 app.use(
     cors({
-        origin: allowedOrigins,
+        origin: [
+            'http://localhost:5173',
+            process.env.FRONTEND_URL,  // Production frontend URL
+        ].filter(Boolean),
         methods: ['GET', 'POST', 'DELETE', 'PUT'],
         allowedHeaders: [
             "Content-Type",
@@ -44,7 +43,8 @@ app.use(
             "Expires",
             "Pragma"
         ],
-        credentials: true
+        credentials: true,  // This is crucial for cookies
+        optionsSuccessStatus: 200  // For legacy browser support
     })
 );
 

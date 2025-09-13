@@ -1,7 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+import apiClient from '../../lib/axios';  // Use the new axios instance
 
 const initialState = {
     isAuthenticated: false,
@@ -11,37 +9,28 @@ const initialState = {
 
 export const registerUser = createAsyncThunk('/auth/register',
     async (formData)=>{
-        const response = await axios.post(`${API_BASE_URL}/api/auth/register`, formData, {
-            withCredentials: true,
-        });
+        const response = await apiClient.post('/api/auth/register', formData);
         return response.data;
     }
 )
 
 export const loginUser = createAsyncThunk('/auth/login',
     async (formData)=>{
-        const response = await axios.post(`${API_BASE_URL}/api/auth/login`, formData, {
-            withCredentials: true,
-        });
+        const response = await apiClient.post('/api/auth/login', formData);
         return response.data;
     }
 )
 
 export const logOut = createAsyncThunk('/auth/logout',
     async () => {
-        const response = await axios.post(
-            `${API_BASE_URL}/api/auth/logout`,
-            {}, 
-            { withCredentials: true }
-        );
+        const response = await apiClient.post('/api/auth/logout', {});
         return response.data;
     }
 )
 
 export const checkAuth = createAsyncThunk('/auth/check-auth',
     async ()=>{
-        const response = await axios.get(`${API_BASE_URL}/api/auth/check-auth`, {
-            withCredentials: true,
+        const response = await apiClient.get('/api/auth/check-auth', {
             headers: {
                 "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate"
             }

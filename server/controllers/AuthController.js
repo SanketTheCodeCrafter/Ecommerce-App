@@ -56,7 +56,13 @@ export const loginUser = async (req, res) =>{
             expiresIn: '1hr'
         })
 
-        res.cookie('token', token, {httpOnly: true, secure: false, path: '/', sameSite: 'lax'});
+        res.cookie('token', token, {
+            httpOnly: true, 
+            secure: true,  // Set to true for HTTPS in production
+            path: '/', 
+            sameSite: 'none',  // Allow cross-origin cookies
+            domain: undefined  // Don't set domain for cross-origin
+        });
         res.json({
             success: true,
             message: "Logged in successfully!",
