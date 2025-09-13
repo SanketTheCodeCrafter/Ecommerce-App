@@ -4,6 +4,11 @@ import { Navigate, useLocation } from 'react-router-dom'
 const CheckAuth = ({ isAuthenticated, user, children }) => {
     const location = useLocation();
 
+    // Allow PayPal return/cancel routes without authentication check
+    if (location.pathname.includes('/paypal-return') || location.pathname.includes('/paypal-cancel')) {
+        return <>{children}</>
+    }
+
     if (!isAuthenticated && !(location.pathname.includes('/login') || location.pathname.includes('/register'))) {
         return <Navigate to={"/auth/login"} />
     }
@@ -11,10 +16,8 @@ const CheckAuth = ({ isAuthenticated, user, children }) => {
     if (isAuthenticated && (location.pathname.includes('/login') || location.pathname.includes('/register'))) {
         if (user?.role === "admin") {
             return <Navigate to={"/admin/dashboard"} />
-
         } else {
             return <Navigate to={"/shop/home"} />
-
         }
     }
 
@@ -26,10 +29,7 @@ const CheckAuth = ({ isAuthenticated, user, children }) => {
         return <Navigate to={"/unauth-page"} />
     }
 
-
     return <>{children}</>
-
-
 }
 
 export default CheckAuth
