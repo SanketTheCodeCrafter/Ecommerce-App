@@ -59,8 +59,8 @@ export const createOrder = async (req, res) => {
                 }))
             }],
             application_context: {
-                return_url: "http://localhost:5173/shop/paypal-return",
-                cancel_url: "http://localhost:5173/shop/paypal-cancel"
+                return_url: process.env.FRONTEND_URL + "/shop/paypal-return",
+                cancel_url: process.env.FRONTEND_URL + "/shop/paypal-cancel"
             }
         });
 
@@ -128,10 +128,10 @@ export const capturePayment = async (req, res) => {
             order.paymentId = paymentId;
             order.payerId = payerId;
 
-            for(let item of order.cartItems){
+            for (let item of order.cartItems) {
                 let product = await Product.findById(item.productId);
 
-                if(!product){
+                if (!product) {
                     return res.status(404).json({
                         success: false,
                         message: `Not enough stock for this product ${product.title}`,

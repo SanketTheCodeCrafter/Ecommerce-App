@@ -20,17 +20,22 @@ const PORT = Number(process.env.PORT) || 5000;
 
 
 mongoose.connect(process.env.MONGO_URL)
-.then(()=>{
-    console.log(('MongoDB connected successfully'));
-})
-.catch((err)=>{
-    console.error(`Error connecting to MongoDB: ${err.message}`);
-});
+    .then(() => {
+        console.log(('MongoDB connected successfully'));
+    })
+    .catch((err) => {
+        console.error(`Error connecting to MongoDB: ${err.message}`);
+    });
 
+
+const allowedOrigins = [
+    'http://localhost:5173',
+    process.env.FRONTEND_URL,  // Production frontend URL
+].filter(Boolean);
 
 app.use(
     cors({
-        origin: 'http://localhost:5173',
+        origin: allowedOrigins,
         methods: ['GET', 'POST', 'DELETE', 'PUT'],
         allowedHeaders: [
             "Content-Type",
