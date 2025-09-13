@@ -41,15 +41,18 @@ function App() {
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
-
       <Routes>
         <Route path="/" element={<Navigate to="/auth/register" replace />} />
+        
+        {/* Auth routes */}
         <Route path='/auth' element={<CheckAuth isAuthenticated={isAuthenticated} user={user} >
           <AuthLayout />
         </CheckAuth>}>
           <Route path="login" element={<AuthLogin />} />
           <Route path="register" element={<AuthRegister />} />
         </Route>
+
+        {/* Admin routes */}
         <Route path="/admin" element={<CheckAuth isAuthenticated={isAuthenticated} user={user} >
           <AdminLayout />
         </CheckAuth>}>
@@ -58,8 +61,11 @@ function App() {
           <Route path="orders" element={<AdminOrders />} />
           <Route path="products" element={<Products />} />
         </Route>
+        
         {/* Backward compatibility: redirect old dashboard path */}
         <Route path="/admin/dashboard" element={<Navigate to="/admin/products" replace />} />
+        
+        {/* Shop routes */}
         <Route path="/shop" element={<CheckAuth isAuthenticated={isAuthenticated} user={user} >
           <ShopLayout />
         </CheckAuth>}>
@@ -71,6 +77,11 @@ function App() {
           <Route path="payment-success" element={<PaymentSuccess />} />
           <Route path='search' element={<Search/>} />
         </Route>
+
+        {/* Standalone PayPal routes (outside of shop layout) */}
+        <Route path="/paypal-return" element={<PaypalReturn />} />
+        <Route path="/paypal-cancel" element={<Navigate to="/shop/checkout" replace />} />
+        
         <Route path="*" element={<NotFound />}></Route>
         <Route path="/unauth-page" element={<UnauthPage />}></Route>
       </Routes>
