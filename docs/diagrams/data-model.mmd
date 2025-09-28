@@ -1,0 +1,38 @@
+%% Data Model (ER) - Mermaid
+erDiagram
+    USERS {
+      string id PK
+      string name
+      string email
+      string role
+    }
+    PRODUCTS {
+      string id PK
+      string title
+      float price
+    }
+    ORDERS {
+      string id PK
+      string userId FK
+      float totalPrice
+    }
+    CARTS {
+      string userId PK
+    }
+    REVIEWS {
+      string id PK
+      string productId FK
+      string userId FK
+      int rating
+    }
+    ADDRESSES {
+      string id PK
+      string userId FK
+    }
+
+    USERS ||--o{ ORDERS : places
+    USERS ||--o{ REVIEWS : writes
+    USERS ||--o{ CARTS : owns
+    USERS ||--o{ ADDRESSES : has
+    PRODUCTS ||--o{ REVIEWS : receives
+    ORDERS }o--|| PRODUCTS : contains

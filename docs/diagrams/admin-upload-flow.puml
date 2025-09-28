@@ -1,0 +1,16 @@
+@startuml
+title Admin Upload Flow
+actor AdminBrowser
+participant Frontend
+participant Backend
+participant Cloudinary
+participant DB
+
+AdminBrowser -> Frontend: open upload
+Frontend -> Backend: POST /api/admin/products/upload
+Backend -> Cloudinary: upload file
+Cloudinary --> Backend: return URL
+Backend -> DB: save product with image URL
+Backend --> Frontend: success
+
+@enduml

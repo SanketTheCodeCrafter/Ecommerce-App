@@ -1,0 +1,21 @@
+%% Component Interaction - Mermaid
+graph TD
+  subgraph Client
+    A[App.jsx / Router]
+    B[Redux Store]
+    C[Components: Shop, Admin, Auth]
+  end
+
+  subgraph Server
+    S1[Routes]
+    S2[Controllers]
+    S3[Models]
+    S4[Helpers]
+  end
+
+  A --> C
+  C -->|dispatch / select| B
+  C -->|HTTP| S1
+  S1 --> S2
+  S2 --> S3
+  S2 --> S4

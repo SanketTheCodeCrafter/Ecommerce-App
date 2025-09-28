@@ -1,0 +1,15 @@
+%% Deployment - Mermaid
+graph LR
+  Developer[Developer]
+  CI[CI/CD]
+  FrontendHost[Vercel / Netlify / S3+CDN]
+  BackendHost[Server: Docker / Node]
+  Mongo[(MongoDB Atlas)]
+  Cloudinary[(Cloudinary CDN)]
+  PayPal[(PayPal)]
+
+  Developer --> CI --> FrontendHost
+  CI --> BackendHost
+  BackendHost --> Mongo
+  BackendHost --> Cloudinary
+  BackendHost --> PayPal

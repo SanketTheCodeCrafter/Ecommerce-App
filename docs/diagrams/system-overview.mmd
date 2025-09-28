@@ -1,0 +1,17 @@
+%% Compact System Overview - Mermaid
+flowchart LR
+  Browser[Browser / Client]
+  UI[React (Vite)]
+  API[Express API]
+  DB[(MongoDB)]
+  Media[(Cloudinary)]
+  Payments[(PayPal)]
+
+  Browser --> UI
+  UI --> API
+  API --> DB
+  API --> Media
+  API --> Payments
+
+  classDef external fill:#f3f4f6,stroke:#999
+  class Media,Payments external

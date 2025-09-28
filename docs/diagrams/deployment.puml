@@ -1,0 +1,18 @@
+@startuml
+title Deployment Topology
+actor Developer
+cloud CI
+node FrontendHost
+node BackendHost
+database MongoDB
+cloud Cloudinary
+cloud PayPal
+
+Developer -> CI: push
+CI -> FrontendHost: deploy static
+CI -> BackendHost: deploy server
+BackendHost -> MongoDB
+BackendHost -> Cloudinary
+BackendHost -> PayPal
+
+@enduml

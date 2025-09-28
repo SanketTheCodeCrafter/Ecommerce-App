@@ -1,0 +1,15 @@
+@startuml
+title Auth Sequence
+actor Browser
+participant Frontend
+participant Backend
+participant DB
+
+Browser -> Frontend: submits signup form
+Frontend -> Backend: POST /api/auth/register
+Backend -> DB: insert user
+DB --> Backend: success
+Backend --> Frontend: set cookie / return user
+Frontend --> Browser: update UI
+
+@enduml

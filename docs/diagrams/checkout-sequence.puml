@@ -1,0 +1,22 @@
+@startuml
+title Checkout Sequence
+actor Browser
+participant Frontend
+participant Backend
+participant PayPal
+participant DB
+
+Browser -> Frontend: click checkout
+Frontend -> Backend: POST /api/shop/order/checkout
+Backend -> DB: create provisional order
+Backend -> PayPal: create payment
+PayPal --> Backend: approval URL
+Backend --> Frontend: approval URL
+Frontend --> Browser: redirect
+PayPal --> Browser: returns to /paypal-return
+Browser --> Frontend: /paypal-return
+Frontend -> Backend: verify payment
+Backend -> DB: finalize order
+Backend --> Frontend: confirmation
+
+@enduml

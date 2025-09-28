@@ -1,0 +1,16 @@
+@startuml
+title System Context
+actor Browser
+node "Frontend (React + Vite)" as Frontend
+node "Backend (Express API)" as Backend
+database "MongoDB" as Mongo
+cloud "Cloudinary" as Cloudinary
+cloud "PayPal" as PayPal
+
+Browser -> Frontend: interacts
+Frontend -> Backend: REST API calls
+Backend -> Mongo: read/write
+Backend -> Cloudinary: upload images
+Backend -> PayPal: payment orchestration
+
+@enduml

@@ -1,0 +1,20 @@
+%% Checkout Sequence - Mermaid
+sequenceDiagram
+  participant Browser
+  participant Frontend
+  participant Backend
+  participant PayPal
+  participant DB
+
+  Browser->>Frontend: click checkout
+  Frontend->>Backend: POST /api/shop/order/checkout
+  Backend->>DB: create provisional order
+  Backend->>PayPal: create payment / approval URL
+  PayPal-->>Backend: approval URL
+  Backend-->>Frontend: return approval URL
+  Frontend-->>Browser: redirect to PayPal
+  PayPal-->>Browser: user approves and returns
+  Browser->>Frontend: /paypal-return route
+  Frontend->>Backend: verify payment
+  Backend->>DB: finalize order status
+  Backend-->>Frontend: confirmation

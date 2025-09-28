@@ -1,0 +1,44 @@
+%% Focused ER Data Model - Mermaid
+erDiagram
+    USERS {
+      ObjectId id PK
+      string name
+      string email
+      string role
+    }
+    PRODUCTS {
+      ObjectId id PK
+      string title
+      float price
+      string[] images
+    }
+    ORDERS {
+      ObjectId id PK
+      ObjectId userId FK
+      float totalPrice
+      string status
+      datetime createdAt
+    }
+    ORDER_ITEMS {
+      ObjectId id PK
+      ObjectId orderId FK
+      ObjectId productId FK
+      int quantity
+      float unitPrice
+    }
+    REVIEWS {
+      ObjectId id PK
+      ObjectId productId FK
+      ObjectId userId FK
+      int rating
+    }
+
+    USERS ||--o{ ORDERS : places
+    ORDERS ||--|{ ORDER_ITEMS : contains
+    PRODUCTS ||--o{ ORDER_ITEMS : included_in
+    USERS ||--o{ REVIEWS : writes
+    PRODUCTS ||--o{ REVIEWS : receives
+
+    %% Notes
+    %% - Orders are the aggregate root for ORDER_ITEMS
+    %% - Reviews link users and products (one review per user per product expected)

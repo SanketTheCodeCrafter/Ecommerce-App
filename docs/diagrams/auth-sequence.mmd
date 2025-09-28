@@ -1,0 +1,13 @@
+%% Auth Sequence - Mermaid
+sequenceDiagram
+  participant Browser
+  participant Frontend
+  participant Backend
+  participant DB
+
+  Browser->>Frontend: submit signup form
+  Frontend->>Backend: POST /api/auth/register
+  Backend->>DB: create user
+  DB-->>Backend: user created
+  Backend-->>Frontend: set cookie / return user
+  Frontend-->>Browser: update UI, store in Redux

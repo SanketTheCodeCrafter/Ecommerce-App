@@ -1,0 +1,45 @@
+@startuml
+title Data Model (ER)
+entity Users {
+  * id : ObjectId
+  --
+  name
+  email
+  role
+}
+entity Products {
+  * id : ObjectId
+  --
+  title
+  price
+}
+entity Orders {
+  * id : ObjectId
+  --
+  userId
+  totalPrice
+}
+entity Cart {
+  * userId : ObjectId
+}
+entity Reviews {
+  * id : ObjectId
+  --
+  productId
+  userId
+  rating
+}
+entity Address {
+  * id : ObjectId
+  --
+  userId
+}
+
+Users ||--o{ Orders
+Users ||--o{ Reviews
+Users ||--o{ Cart
+Users ||--o{ Address
+Products ||--o{ Reviews
+Orders }o--|| Products
+
+@enduml

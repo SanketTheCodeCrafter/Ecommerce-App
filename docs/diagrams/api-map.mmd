@@ -1,0 +1,25 @@
+%% API Map - Mermaid
+graph LR
+  subgraph Auth
+    A1[POST /api/auth/register]
+    A2[POST /api/auth/login]
+    A3[GET /api/auth/me]
+  end
+
+  subgraph Admin
+    AD1[GET/POST /api/admin/products]
+    AD2[PUT/DELETE /api/admin/products/:id]
+    AD3[GET /api/admin/orders]
+  end
+
+  subgraph Shop
+    S1[GET /api/shop/products]
+    S2[GET /api/shop/products/:id]
+    S3[POST /api/shop/cart]
+    S4[POST /api/shop/order/checkout]
+    S5[POST /api/shop/review]
+  end
+
+  Browser --> Auth
+  Browser --> Shop
+  Admin --> AD1

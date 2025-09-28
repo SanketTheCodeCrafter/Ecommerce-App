@@ -1,0 +1,15 @@
+%% System Context - Mermaid
+graph LR
+  Browser[Browser / Client]
+  Backend[Express API Server]
+  Mongo[(MongoDB)]
+  Cloudinary[(Cloudinary)]
+  PayPal[(PayPal)]
+
+  Browser -->|REST / Web| Backend
+  Backend -->|Mongoose| Mongo
+  Backend -->|Upload API| Cloudinary
+  Backend -->|Payment API| PayPal
+
+  classDef ext fill:#f9f,stroke:#333,stroke-width:1px;
+  class Cloudinary,PayPal ext

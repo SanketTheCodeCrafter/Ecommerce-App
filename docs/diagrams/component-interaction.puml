@@ -1,0 +1,21 @@
+@startuml
+title Component Interaction
+package Client {
+  [App.jsx]
+  [Redux Store]
+  [Components]
+}
+package Server {
+  [Routes]
+  [Controllers]
+  [Models]
+  [Helpers]
+}
+
+[Components] -> [Redux Store] : dispatch/select
+[Components] -> [Routes] : HTTP requests
+[Routes] -> [Controllers]
+[Controllers] -> [Models]
+[Controllers] -> [Helpers]
+
+@enduml

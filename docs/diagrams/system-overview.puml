@@ -1,0 +1,16 @@
+@startuml
+title Compact System Overview
+actor Browser
+node Frontend
+node Backend
+database MongoDB
+cloud Cloudinary
+cloud PayPal
+
+Browser -> Frontend: UI actions
+Frontend -> Backend: REST API
+Backend -> MongoDB: data storage
+Backend -> Cloudinary: media uploads
+Backend -> PayPal: payments
+
+@enduml

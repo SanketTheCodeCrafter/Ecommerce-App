@@ -1,0 +1,47 @@
+@startuml
+title Focused ER Data Model
+entity Users {
+  * id : ObjectId
+  --
+  name
+  email
+  role
+}
+entity Products {
+  * id : ObjectId
+  --
+  title
+  price
+  images[]
+}
+entity Orders {
+  * id : ObjectId
+  --
+  userId
+  totalPrice
+  status
+  createdAt
+}
+entity OrderItems {
+  * id : ObjectId
+  --
+  orderId
+  productId
+  quantity
+  unitPrice
+}
+entity Reviews {
+  * id : ObjectId
+  --
+  productId
+  userId
+  rating
+}
+
+Users ||--o{ Orders
+Orders ||--|{ OrderItems
+Products ||--o{ OrderItems
+Users ||--o{ Reviews
+Products ||--o{ Reviews
+
+@enduml

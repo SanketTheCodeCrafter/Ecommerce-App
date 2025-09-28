@@ -1,0 +1,20 @@
+@startuml
+title API Map
+component "Auth" as Auth
+component "Admin" as Admin
+component "Shop" as Shop
+
+Auth --> "POST /api/auth/register"
+Auth --> "POST /api/auth/login"
+Auth --> "GET /api/auth/me"
+
+Admin --> "/api/admin/products"
+Admin --> "PUT/DELETE /api/admin/products/:id"
+Admin --> "GET /api/admin/orders"
+
+Shop --> "GET /api/shop/products"
+Shop --> "GET /api/shop/products/:id"
+Shop --> "POST /api/shop/cart"
+Shop --> "POST /api/shop/order/checkout"
+
+@enduml
