@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import bannerOne from "../../assets/banner-1.webp";
 import bannerTwo from "../../assets/banner-2.webp";
 import bannerThree from "../../assets/banner-3.webp";
@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllFilteredProducts, fetchProductDetails } from '@/store/shop/product-slice';
 import ShoppingProductTile from '@/components/ShoppingView/ShoppingProductTile';
+import ProductSkeleton from '@/components/ShoppingView/ProductSkeleton';
 import { useNavigate } from 'react-router-dom';
 import { addToCart, fetchCartItems } from '@/store/shop/cart-slice';
 import { toast } from 'sonner';
@@ -34,7 +35,7 @@ const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const slides = [bannerOne, bannerTwo, bannerThree]
   const dispatch = useDispatch();
-  const { productList, productDetails } = useSelector(state => state.shopProducts)
+  const { productList, productDetails, isLoading } = useSelector(state => state.shopProducts)
   const { user } = useSelector(state => state.auth)
   const navigate = useNavigate();
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
@@ -67,11 +68,15 @@ const Home = () => {
     navigate('/shop/listing');
   }
 
-  function handleGetProductDetails(getCurrentProductId) {
-    dispatch(fetchProductDetails(getCurrentProductId));
-  }
+  const handleGetProductDetails = useCallback((getCurrentProductId) => {
+    if (getCurrentProductId) {
+      dispatch(fetchProductDetails(getCurrentProductId));
+    }
+  }, [dispatch]);
 
-  function handleAddtoCart(getCurrentProductId) {
+  const handleAddtoCart = useCallback((getCurrentProductId) => {
+    if (!getCurrentProductId) return;
+    
     dispatch(
       addToCart({
         userId: user?.id,
@@ -84,7 +89,7 @@ const Home = () => {
         toast.success("Product is added to cart");
       }
     });
-  }
+  }, [user?.id, dispatch]);
   // console.log(productList)
   return (
     <div className='flex flex-col min-h-screen'>
@@ -157,18 +162,25 @@ const Home = () => {
             Feature Products
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {productList && productList.length > 0
-              ? productList.map((productItem) => (
+            {isLoading ? (
+              // Show skeleton loaders while loading
+              Array.from({ length: 8 }).map((_, index) => (
+                <ProductSkeleton key={`skeleton-${index}`} />
+              ))
+            ) : productList && productList.length > 0 ? (
+              productList.map((productItem) => (
                 <ShoppingProductTile
+                  key={productItem._id}
                   handleGetProductDetails={handleGetProductDetails}
                   product={productItem}
                   handleAddToCart={handleAddtoCart}
                 />
               ))
-              : <div className='text-center text-gray-500'>
+            ) : (
+              <div className='col-span-full text-center text-gray-500 py-8'>
                 No products found
               </div>
-            }
+            )}
           </div>
         </div>
       </section>

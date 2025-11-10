@@ -3,16 +3,32 @@ import { Card, CardContent, CardFooter } from '../ui/card'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { brandOptionsMap, categoryOptionsMap } from '@/config/registerFormControls'
+import LazyImage from '../CommonCompo/LazyImage'
 
-const ShoppingProductTile = ({product, handleGetProductDetails, handleAddToCart}) => {
+const ShoppingProductTile = React.memo(({product, handleGetProductDetails, handleAddToCart}) => {
+  const handleClick = React.useCallback(() => {
+    if (product?._id) {
+      handleGetProductDetails(product._id);
+    }
+  }, [product?._id, handleGetProductDetails]);
+
+  const handleAddToCartClick = React.useCallback(() => {
+    if (product?._id && product?.totalStock) {
+      handleAddToCart(product._id, product.totalStock);
+    }
+  }, [product?._id, product?.totalStock, handleAddToCart]);
+
   return (
     <Card className={'w-full max-w-sm mx-auto p-0 pb-4'}>
-        <div onClick={() => handleGetProductDetails(product?._id)} className='cursor-pointer hover:shadow-lg transition-shadow duration-300'>
+        <div onClick={handleClick} className='cursor-pointer hover:shadow-lg transition-shadow duration-300'>
             <div className="relative">
-                <img 
+                <LazyImage 
                     src={product?.image} 
-                    alt={product?.title}
-                    className='w-full h-[300px] object-cover rounded-t-lg' />
+                    alt={product?.title || 'Product image'}
+                    className='w-full h-[300px] object-cover rounded-t-lg'
+                    loading="lazy"
+                    decoding="async"
+                />
                     {product?.totalStock === 0 ? (
                         <Badge className={'absolute top-2 left-2 bg-red-500 hover:bg-red-600'}>
                             Out of Stock
@@ -56,7 +72,7 @@ const ShoppingProductTile = ({product, handleGetProductDetails, handleAddToCart}
                 </Button>
             ): (
                 <Button 
-                onClick={()=>handleAddToCart(product?._id, product?.totalStock)}
+                onClick={handleAddToCartClick}
                 className={'w-full bg-primary hover:bg-primary/90 text-white'}>
                     Add to Cart
                 </Button>
@@ -64,6 +80,20 @@ const ShoppingProductTile = ({product, handleGetProductDetails, handleAddToCart}
         </CardFooter>
     </Card>
   )
-}
+}, (prevProps, nextProps) => {
+  // Custom comparison function for React.memo
+  return (
+    prevProps.product?._id === nextProps.product?._id &&
+    prevProps.product?.image === nextProps.product?.image &&
+    prevProps.product?.title === nextProps.product?.title &&
+    prevProps.product?.price === nextProps.product?.price &&
+    prevProps.product?.salePrice === nextProps.product?.salePrice &&
+    prevProps.product?.totalStock === nextProps.product?.totalStock &&
+    prevProps.product?.category === nextProps.product?.category &&
+    prevProps.product?.brand === nextProps.product?.brand
+  );
+});
+
+ShoppingProductTile.displayName = 'ShoppingProductTile';
 
 export default ShoppingProductTile
