@@ -1,4 +1,4 @@
-import { Navigate, Routes } from "react-router-dom"
+import { Navigate, Routes, useLocation } from "react-router-dom"
 import { Route } from "react-router-dom";
 import AuthLayout from "./components/Auth/AuthLayout";
 import AuthLogin from "./pages/Auth/AuthLogin";
@@ -24,14 +24,21 @@ import Search from "./pages/ShoppingView/Search";
 
 
 function App() {
-  const {isAuthenticated, user, isLoading} = useSelector((state) => state.auth);
+  const {isAuthenticated, user, isLoading, authChecked} = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const location = useLocation();
+
+  // Check if current route is a public route (auth pages)
+  const isPublicRoute = location.pathname.startsWith('/auth/') || location.pathname === '/auth';
 
   useEffect(()=>{
+    // Run auth check in background - don't block rendering
     dispatch(checkAuth());
   }, [dispatch])
 
-  if(isLoading){
+  // Only show loading spinner for protected routes that need auth state
+  // Public routes (login/register) should render immediately
+  if(isLoading && !isPublicRoute && !authChecked){
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500"></div>

@@ -3,8 +3,9 @@ import apiClient from '../../lib/axios';  // Use the new axios instance
 
 const initialState = {
     isAuthenticated: false,
-    isLoading: true,
-    user: null
+    isLoading: false, // Changed to false - don't block initial render
+    user: null,
+    authChecked: false // Track if we've attempted to check auth
 }
 
 export const registerUser = createAsyncThunk('/auth/register',
@@ -29,13 +30,40 @@ export const logOut = createAsyncThunk('/auth/logout',
 )
 
 export const checkAuth = createAsyncThunk('/auth/check-auth',
-    async ()=>{
-        const response = await apiClient.get('/api/auth/check-auth', {
-            headers: {
-                "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate"
-            }
-        });
-        return response.data;
+    async (_, { rejectWithValue })=>{
+        // Fast-fail: Check if token cookie exists before making API call
+        // This avoids unnecessary network requests when user is not logged in
+        const hasToken = document.cookie.split(';').some(c => c.trim().startsWith('token='));
+        
+        if (!hasToken) {
+            // No token cookie, user is definitely not authenticated
+            return rejectWithValue({ success: false, message: 'No token found' });
+        }
+
+        try {
+            // Add timeout to prevent hanging (5 seconds max)
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Auth check timeout')), 5000)
+            );
+            
+            const response = await Promise.race([
+                apiClient.get('/api/auth/check-auth', {
+                    headers: {
+                        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate"
+                    },
+                    timeout: 5000 // Axios timeout
+                }),
+                timeoutPromise
+            ]);
+            
+            return response.data;
+        } catch (error) {
+            // If it's a timeout or network error, fail gracefully
+            return rejectWithValue({ 
+                success: false, 
+                message: error.message || 'Auth check failed' 
+            });
+        }
     }
 )
 
@@ -76,15 +104,18 @@ const authSlice= createSlice({
                 state.user=null;
             })
             .addCase(checkAuth.pending, (state)=>{
-                state.isLoading=true;
+                // Don't set isLoading to true - allow pages to render while checking
+                state.authChecked = false;
             })
             .addCase(checkAuth.fulfilled, (state, action)=>{
                 state.isLoading=false;
+                state.authChecked = true;
                 state.isAuthenticated= action.payload.success;
                 state.user = action.payload.success ? action.payload.user : null;
             })
             .addCase(checkAuth.rejected, (state, action)=>{
                 state.isLoading=false;
+                state.authChecked = true;
                 state.isAuthenticated=false;
                 state.user=null;
             })
