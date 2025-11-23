@@ -1,0 +1,46 @@
+%% Project Gantt chart (May - Sep 2025)
+gantt
+    title Ecommerce webapp — May to September 2025
+    dateFormat  YYYY-MM-DD
+    axisFormat  %b
+
+    %% Legend: use 'done' to mark completed tasks; adjust IDs and dates as needed.
+
+    section Phase: Planning
+    Project kickoff & requirements     :done, kickoff, 2025-05-01, 7d
+    Repo review & initial backlog      :done, backlog, 2025-05-08, 6d
+    Architecture design (high-level)   :done, arch, 2025-05-15, 10d
+
+    section Phase: Design
+    Data model & DB schema             :done, dbschema, 2025-05-28, 7d
+    API design & contracts             :done, apidesign, 2025-06-05, 7d
+    UI/UX wireframes & flows           :designui, 2025-06-12, 10d
+
+    section Phase: Implementation (backend)
+    Boilerplate, routing, auth        :backend-boiler, 2025-06-24, 10d
+    Products, Cart models & controllers:backend-products, after backend-boiler, 12d
+    Orders & Payment integration       :backend-orders, after backend-products, 14d
+    Admin endpoints and image uploads  :backend-admin, after backend-orders, 10d
+
+    section Phase: Implementation (frontend)
+    Frontend scaffold & routing       :frontend-skel, 2025-06-24, 8d
+    Product listing, detail, search    :frontend-products, after frontend-skel, 16d
+    Cart & Checkout UI (PayPal flow)   :frontend-checkout, after frontend-products, 14d
+    Admin UI (product management)     :frontend-admin, 2025-08-01, 14d
+
+    section Phase: Integrations & Quality
+    Cloudinary integration & testing  :int-cloud, 2025-07-20, 7d
+    PayPal integration & e2e checkout  :int-paypal, after backend-orders, 10d
+    Logging, monitoring & healthcheck  :int-monitor, 2025-08-10, 7d
+
+    section Phase: CI / Tests / Docs
+    CI pipeline (lint/test/build)     :ci, 2025-08-15, 7d
+    Unit & integration tests           :tests, after ci, 14d
+    Documentation & diagrams finalize :docs, 2025-09-01, 14d
+
+    section Phase: Release
+    Pre-release QA & bugfixes         :qa, 2025-09-15, 7d
+    Release & deploy                  :release, 2025-09-24, 3d
+    Post-release monitoring           :monitor, 2025-09-28, 3d
+
+    %% Notes: adjust task durations and dependencies to match team velocity.

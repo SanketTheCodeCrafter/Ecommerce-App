@@ -47,12 +47,21 @@ const reviewSlie = createSlice({
                 state.isLoading = true;
             })
             .addCase(getReviews.fulfilled, (state, action) => {
-                state.isLoading = false,
-                    state.reviews = action.payload.data;
+                state.isLoading = false;
+                state.reviews = action.payload?.data || [];
             })
             .addCase(getReviews.rejected, (state, action) => {
-                state.isLoading = false,
-                    state.reviews = [];
+                state.isLoading = false;
+                state.reviews = [];
+            })
+            .addCase(addReview.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(addReview.fulfilled, (state, action) => {
+                state.isLoading = false;
+            })
+            .addCase(addReview.rejected, (state, action) => {
+                state.isLoading = false;
             })
     }
 })

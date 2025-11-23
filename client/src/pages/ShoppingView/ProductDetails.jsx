@@ -118,138 +118,136 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
 
     return (
         <Dialog open={open} onOpenChange={handleDialogClose}>
-            <DialogContent className='p-0 max-w-[95vw] sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[65vw] max-h-[95vh] overflow-hidden'>
-                <div className='flex flex-col h-full'>
-                    {/* Header with Close Button */}
-                    <div className="flex items-center justify-between p-4 border-b bg-white sticky top-0 z-10">
-                        <h2 className="text-lg font-semibold truncate pr-2">{productDetails?.title}</h2>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={handleDialogClose}
-                            className="h-8 w-8 shrink-0 hover:bg-gray-100"
-                        >
-                            <X className="h-4 w-4" />
-                        </Button>
-                    </div>
+            <DialogContent className='p-0 max-w-[95vw] sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[70vw] max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col'>
+                {/* Header with Close Button */}
+                <div className="flex items-center justify-between p-3 sm:p-4 border-b bg-white sticky top-0 z-10 shrink-0">
+                    <h2 className="text-base sm:text-lg font-semibold truncate pr-2">{productDetails?.title}</h2>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleDialogClose}
+                        className="h-8 w-8 shrink-0 hover:bg-gray-100"
+                    >
+                        <X className="h-4 w-4" />
+                    </Button>
+                </div>
 
-                    {/* Scrollable Content */}
-                    <div className='flex-1 overflow-y-auto'>
-                        <div className='p-4 space-y-6'>
-                            {/* Product Image */}
-                            <div className="w-full">
-                                <img
-                                    src={productDetails?.image}
-                                    alt={productDetails?.title}
-                                    className='w-full h-[250px] sm:h-[300px] md:h-[400px] object-cover rounded-lg'
-                                />
+                {/* Scrollable Content */}
+                <div className='flex-1 overflow-y-auto overscroll-contain'>
+                    <div className='p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6'>
+                        {/* Product Image */}
+                        <div className="w-full">
+                            <img
+                                src={productDetails?.image}
+                                alt={productDetails?.title}
+                                className='w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[400px] object-cover rounded-lg'
+                            />
+                        </div>
+
+                        {/* Product Info */}
+                        <div className="space-y-3 sm:space-y-4">
+                            <DialogDescription className="text-sm text-muted-foreground">
+                                {productDetails?.description}
+                            </DialogDescription>
+
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <div className="flex">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <StarIcon
+                                            key={star}
+                                            className={`w-4 h-4 sm:w-5 sm:h-5 ${star <= roundedAverage ? 'fill-primary text-primary' : 'text-muted-foreground'}`}
+                                        />
+                                    ))}
+                                </div>
+                                <span className="text-xs sm:text-sm text-muted-foreground">
+                                    ({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})
+                                </span>
                             </div>
 
-                            {/* Product Info */}
-                            <div className="space-y-4">
-                                <DialogDescription className="text-sm text-muted-foreground">
-                                    {productDetails?.description}
-                                </DialogDescription>
-
-                                <div className="flex items-center gap-2">
-                                    <div className="flex">
-                                        {[1, 2, 3, 4, 5].map((star) => (
-                                            <StarIcon
-                                                key={star}
-                                                className={`w-4 sm:w-5 ${star <= roundedAverage ? 'fill-primary' : ''}`}
-                                            />
-                                        ))}
-                                    </div>
-                                    <span className="text-sm text-muted-foreground">
-                                        ({reviews.length} reviews)
+                            <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+                                <span className={`text-lg sm:text-xl md:text-2xl font-bold ${productDetails?.salePrice > 0 ? 'line-through text-muted-foreground' : 'text-primary'}`}>
+                                    ${productDetails?.price}
+                                </span>
+                                {productDetails?.salePrice > 0 && (
+                                    <span className="text-lg sm:text-xl md:text-2xl font-bold text-primary">
+                                        ${productDetails?.salePrice}
                                     </span>
-                                </div>
-
-                                <div className="flex items-center gap-4">
-                                    <span className={`text-xl sm:text-2xl font-bold ${productDetails?.salePrice > 0 ? 'line-through text-muted-foreground' : ''}`}>
-                                        ${productDetails?.price}
-                                    </span>
-                                    {productDetails?.salePrice > 0 && (
-                                        <span className="text-xl sm:text-2xl font-bold text-primary">
-                                            ${productDetails?.salePrice}
-                                        </span>
-                                    )}
-                                </div>
-
-                                <Button
-                                    onClick={() => handleAddToCart(productDetails?._id, productDetails?.totalStock)}
-                                    disabled={productDetails?.totalStock === 0}
-                                    className="w-full"
-                                >
-                                    {productDetails?.totalStock === 0 ? 'Out of Stock' : 'Add to Cart'}
-                                </Button>
+                                )}
                             </div>
 
-                            <Separator />
+                            <Button
+                                onClick={() => handleAddToCart(productDetails?._id, productDetails?.totalStock)}
+                                disabled={productDetails?.totalStock === 0}
+                                className="w-full text-sm sm:text-base"
+                            >
+                                {productDetails?.totalStock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                            </Button>
+                        </div>
 
-                            {/* Reviews Section */}
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-semibold">Customer Reviews</h3>
-                                
-                                {/* Existing Reviews */}
-                                <div className="space-y-3 max-h-[200px] overflow-y-auto pr-2">
-                                    {reviews.length === 0 ? (
-                                        <p className="text-muted-foreground text-center py-4">No reviews yet</p>
-                                    ) : (
-                                        reviews.map((rev) => (
-                                            <div key={rev?._id} className="border rounded-lg p-3 bg-gray-50">
-                                                <div className="flex items-start gap-3">
-                                                    <Avatar className="h-8 w-8 shrink-0">
-                                                        <AvatarFallback className="text-xs">
-                                                            {rev?.userName?.[0]}
-                                                        </AvatarFallback>
-                                                    </Avatar>
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                            <p className="font-medium text-sm">{rev?.userName}</p>
-                                                            <div className="flex">
-                                                                {[1, 2, 3, 4, 5].map((star) => (
-                                                                    <StarIcon
-                                                                        key={star}
-                                                                        className={`w-3 ${star <= (Number(rev?.reviewValue) || 0) ? 'fill-primary' : ''}`}
-                                                                    />
-                                                                ))}
-                                                            </div>
+                        <Separator />
+
+                        {/* Reviews Section */}
+                        <div className="space-y-4">
+                            <h3 className="text-base sm:text-lg font-semibold">Customer Reviews</h3>
+                            
+                            {/* Existing Reviews */}
+                            <div className="space-y-3 max-h-[250px] sm:max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                                {reviews.length === 0 ? (
+                                    <p className="text-sm text-muted-foreground text-center py-4">No reviews yet. Be the first to review!</p>
+                                ) : (
+                                    reviews.map((rev) => (
+                                        <div key={rev?._id} className="border rounded-lg p-3 bg-gray-50 hover:bg-gray-100 transition-colors">
+                                            <div className="flex items-start gap-3">
+                                                <Avatar className="h-8 w-8 shrink-0">
+                                                    <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                                                        {rev?.userName?.[0]?.toUpperCase() || 'U'}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                                                        <p className="font-medium text-sm">{rev?.userName || 'Anonymous'}</p>
+                                                        <div className="flex shrink-0">
+                                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                                <StarIcon
+                                                                    key={star}
+                                                                    className={`w-3 h-3 ${star <= (Number(rev?.reviewValue) || 0) ? 'fill-primary text-primary' : 'text-muted-foreground'}`}
+                                                                />
+                                                            ))}
                                                         </div>
-                                                        <p className="text-muted-foreground text-sm leading-relaxed">
-                                                            {rev?.reviewMessage}
-                                                        </p>
                                                     </div>
+                                                    <p className="text-muted-foreground text-sm leading-relaxed break-words">
+                                                        {rev?.reviewMessage}
+                                                    </p>
                                                 </div>
                                             </div>
-                                        ))
-                                    )}
-                                </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
 
-                                {/* Add Review Section */}
-                                <div className="space-y-4 pt-4 border-t">
-                                    <Label className="text-base font-medium">Write a review</Label>
-                                    <div className="flex gap-1">
-                                        <StarRatingComponent
-                                            rating={rating}
-                                            handleRatingChange={handleRatingChange}
-                                        />
-                                    </div>
-                                    <Input
-                                        name="reviewMsg"
-                                        value={reviewMsg}
-                                        onChange={(event) => setReviewMsg(event.target.value)}
-                                        placeholder="Write your review here..."
-                                        className="w-full"
+                            {/* Add Review Section */}
+                            <div className="space-y-3 sm:space-y-4 pt-4 border-t">
+                                <Label className="text-sm sm:text-base font-medium">Write a review</Label>
+                                <div className="flex gap-1 flex-wrap">
+                                    <StarRatingComponent
+                                        rating={rating}
+                                        handleRatingChange={handleRatingChange}
                                     />
-                                    <Button
-                                        onClick={handleAddReview}
-                                        disabled={reviewMsg.trim() === '' || rating === 0}
-                                        className="w-full"
-                                    >
-                                        Submit Review
-                                    </Button>
                                 </div>
+                                <Input
+                                    name="reviewMsg"
+                                    value={reviewMsg}
+                                    onChange={(event) => setReviewMsg(event.target.value)}
+                                    placeholder="Write your review here..."
+                                    className="w-full text-sm sm:text-base"
+                                />
+                                <Button
+                                    onClick={handleAddReview}
+                                    disabled={reviewMsg.trim() === '' || rating === 0}
+                                    className="w-full text-sm sm:text-base"
+                                >
+                                    Submit Review
+                                </Button>
                             </div>
                         </div>
                     </div>
