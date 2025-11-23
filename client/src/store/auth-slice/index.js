@@ -3,7 +3,7 @@ import apiClient from '../../lib/axios';  // Use the new axios instance
 
 const initialState = {
     isAuthenticated: false,
-    isLoading: true,
+    isLoading: false, // Start as false to allow immediate rendering of public routes
     user: null
 }
 
@@ -29,13 +29,18 @@ export const logOut = createAsyncThunk('/auth/logout',
 )
 
 export const checkAuth = createAsyncThunk('/auth/check-auth',
-    async ()=>{
-        const response = await apiClient.get('/api/auth/check-auth', {
-            headers: {
-                "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate"
-            }
-        });
-        return response.data;
+    async (_, { rejectWithValue })=>{
+        try {
+            const response = await apiClient.get('/api/auth/check-auth', {
+                headers: {
+                    "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate"
+                }
+            });
+            return response.data;
+        } catch (error) {
+            // Silently fail for auth check - user is just not authenticated
+            return rejectWithValue(error.response?.data || { success: false });
+        }
     }
 )
 

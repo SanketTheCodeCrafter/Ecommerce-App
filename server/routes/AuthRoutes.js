@@ -8,11 +8,10 @@ router.post('/login', loginUser)
 router.post('/logout', logoutUser)
 
 router.get('/check-auth', authMiddleware, (req, res)=>{
-    const user = req.user;
+    // Return minimal response for faster processing
     res.status(200).json({
         success: true,
-        message: "User is authenticated",
-        user,
+        user: req.user,
     })
 })
 
