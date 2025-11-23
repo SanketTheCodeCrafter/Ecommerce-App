@@ -98,31 +98,36 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
             userName: user?.userName,
             reviewMessage: reviewMsg,
             reviewValue: rating,
-        })).then((data)=>{
-            const success = data?.payload?.success;
-            const message = data?.payload?.message;
-            if(success){
-                setRating(0);
-                setReviewMsg('');
-                dispatch(getReviews(productDetails?._id));
-                toast.success('Review added successfully!');
-            }else{
-                if(message){
-                    toast.error(message);
-                }else{
-                    toast.error('Something went wrong!');
+        })).then((action) => {
+            // Check if action was fulfilled
+            if (action.type?.endsWith('/fulfilled')) {
+                const success = action?.payload?.success;
+                const message = action?.payload?.message;
+                if (success) {
+                    setRating(0);
+                    setReviewMsg('');
+                    dispatch(getReviews(productDetails?._id));
+                    toast.success(message || 'Review added successfully!');
+                } else {
+                    toast.error(message || 'Something went wrong!');
                 }
+            } else if (action.type?.endsWith('/rejected')) {
+                // Handle rejected case
+                const message = action?.payload?.message || action?.error?.message || 'Failed to add review';
+                toast.error(message);
             }
+        }).catch((error) => {
+            toast.error(error?.message || 'Something went wrong!');
         })
     }
 
     return (
         <Dialog open={open} onOpenChange={handleDialogClose}>
-            <DialogContent className='p-0 max-w-[95vw] sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[65vw] max-h-[95vh] overflow-hidden'>
-                <div className='flex flex-col h-full'>
+            <DialogContent className='p-0 max-w-[95vw] sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[65vw] max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col'>
+                <div className='flex flex-col h-full min-h-0'>
                     {/* Header with Close Button */}
-                    <div className="flex items-center justify-between p-4 border-b bg-white sticky top-0 z-10">
-                        <h2 className="text-lg font-semibold truncate pr-2">{productDetails?.title}</h2>
+                    <div className="flex items-center justify-between p-3 sm:p-4 border-b bg-white sticky top-0 z-10 shrink-0">
+                        <h2 className="text-base sm:text-lg font-semibold truncate pr-2">{productDetails?.title}</h2>
                         <Button
                             variant="ghost"
                             size="icon"
@@ -134,14 +139,14 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
                     </div>
 
                     {/* Scrollable Content */}
-                    <div className='flex-1 overflow-y-auto'>
-                        <div className='p-4 space-y-6'>
+                    <div className='flex-1 overflow-y-auto min-h-0'>
+                        <div className='p-3 sm:p-4 space-y-4 sm:space-y-6'>
                             {/* Product Image */}
                             <div className="w-full">
                                 <img
                                     src={productDetails?.image}
                                     alt={productDetails?.title}
-                                    className='w-full h-[250px] sm:h-[300px] md:h-[400px] object-cover rounded-lg'
+                                    className='w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[350px] object-cover rounded-lg'
                                 />
                             </div>
 
@@ -188,35 +193,35 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
                             <Separator />
 
                             {/* Reviews Section */}
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-semibold">Customer Reviews</h3>
+                            <div className="space-y-4 sm:space-y-6">
+                                <h3 className="text-base sm:text-lg font-semibold">Customer Reviews</h3>
                                 
                                 {/* Existing Reviews */}
-                                <div className="space-y-3 max-h-[200px] overflow-y-auto pr-2">
+                                <div className="space-y-3 max-h-[250px] sm:max-h-[300px] overflow-y-auto pr-2">
                                     {reviews.length === 0 ? (
-                                        <p className="text-muted-foreground text-center py-4">No reviews yet</p>
+                                        <p className="text-muted-foreground text-center py-4 text-sm">No reviews yet. Be the first to review!</p>
                                     ) : (
                                         reviews.map((rev) => (
-                                            <div key={rev?._id} className="border rounded-lg p-3 bg-gray-50">
-                                                <div className="flex items-start gap-3">
-                                                    <Avatar className="h-8 w-8 shrink-0">
+                                            <div key={rev?._id} className="border rounded-lg p-3 bg-gray-50 hover:bg-gray-100 transition-colors">
+                                                <div className="flex items-start gap-2 sm:gap-3">
+                                                    <Avatar className="h-7 w-7 sm:h-8 sm:w-8 shrink-0">
                                                         <AvatarFallback className="text-xs">
-                                                            {rev?.userName?.[0]}
+                                                            {rev?.userName?.[0]?.toUpperCase() || 'U'}
                                                         </AvatarFallback>
                                                     </Avatar>
                                                     <div className="flex-1 min-w-0">
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                            <p className="font-medium text-sm">{rev?.userName}</p>
-                                                            <div className="flex">
+                                                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                                                            <p className="font-medium text-xs sm:text-sm">{rev?.userName || 'Anonymous'}</p>
+                                                            <div className="flex shrink-0">
                                                                 {[1, 2, 3, 4, 5].map((star) => (
                                                                     <StarIcon
                                                                         key={star}
-                                                                        className={`w-3 ${star <= (Number(rev?.reviewValue) || 0) ? 'fill-primary' : ''}`}
+                                                                        className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${star <= (Number(rev?.reviewValue) || 0) ? 'fill-primary text-primary' : 'text-gray-300'}`}
                                                                     />
                                                                 ))}
                                                             </div>
                                                         </div>
-                                                        <p className="text-muted-foreground text-sm leading-relaxed">
+                                                        <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed break-words">
                                                             {rev?.reviewMessage}
                                                         </p>
                                                     </div>
@@ -227,9 +232,9 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
                                 </div>
 
                                 {/* Add Review Section */}
-                                <div className="space-y-4 pt-4 border-t">
-                                    <Label className="text-base font-medium">Write a review</Label>
-                                    <div className="flex gap-1">
+                                <div className="space-y-3 sm:space-y-4 pt-4 border-t">
+                                    <Label className="text-sm sm:text-base font-medium">Write a review</Label>
+                                    <div className="flex gap-1 flex-wrap">
                                         <StarRatingComponent
                                             rating={rating}
                                             handleRatingChange={handleRatingChange}
@@ -240,12 +245,12 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
                                         value={reviewMsg}
                                         onChange={(event) => setReviewMsg(event.target.value)}
                                         placeholder="Write your review here..."
-                                        className="w-full"
+                                        className="w-full text-sm sm:text-base"
                                     />
                                     <Button
                                         onClick={handleAddReview}
                                         disabled={reviewMsg.trim() === '' || rating === 0}
-                                        className="w-full"
+                                        className="w-full text-sm sm:text-base"
                                     >
                                         Submit Review
                                     </Button>
