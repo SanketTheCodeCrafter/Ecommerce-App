@@ -117,6 +117,23 @@
   body {
     @apply bg-background text-foreground;
   }
+  html {
+    scroll-behavior: smooth;
+  }
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  /* Performance optimizations for scrolling */
+  img {
+    will-change: opacity;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+  /* Optimize rendering for product grids */
+  [class*="grid"] {
+    contain: layout style paint;
+  }
 }
 
 /* Custom Scrollbar Styles */

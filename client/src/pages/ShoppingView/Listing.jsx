@@ -1,12 +1,13 @@
 import Filter from '@/components/ShoppingView/Filter'
 import ShoppingProductTile from '@/components/ShoppingView/ShoppingProductTile'
+import ProductSkeleton from '@/components/ShoppingView/ProductSkeleton'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu } from '@/components/ui/dropdown-menu'
 import { sortOptions } from '@/config/registerFormControls'
 import { fetchAllFilteredProducts, fetchProductDetails } from '@/store/shop/product-slice'
 import { DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
 import { ArrowUpDownIcon, ParkingMeter } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 import ProductDetails from './ProductDetails'
@@ -32,7 +33,7 @@ function createSearchParamsHelper(filterParams) {
 
 const Listing = () => {
   const dispatch = useDispatch()
-  const { productList, productDetails } = useSelector((state) => state.shopProducts)
+  const { productList, productDetails, isLoading } = useSelector((state) => state.shopProducts)
   const [filter, setFilter] = useState({});
   const [sort, setSort] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -74,12 +75,13 @@ const Listing = () => {
     sessionStorage.setItem("filter", JSON.stringify(cpyFilter));
   }
 
-  function handleGetProductDetails(productId) {
-    console.log(productId, "productId")
-    dispatch(fetchProductDetails(productId))
-  }
+  const handleGetProductDetails = useCallback((productId) => {
+    if (productId) {
+      dispatch(fetchProductDetails(productId))
+    }
+  }, [dispatch]);
 
-  function handleAddToCart(getCurrentProductId, getTotalStock){
+  const handleAddToCart = useCallback((getCurrentProductId, getTotalStock) => {
     const getCartItems = cartItemsArray;
 
     if(getCartItems.length){
@@ -111,7 +113,7 @@ const Listing = () => {
         }
       }
     })
-  }
+  }, [cartItemsArray, user?.id, dispatch]);
 
 
 
@@ -215,7 +217,12 @@ const Listing = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
           {
-            productList && productList.length > 0 ? (
+            isLoading ? (
+              // Show skeleton loaders while loading
+              Array.from({ length: 8 }).map((_, index) => (
+                <ProductSkeleton key={`skeleton-${index}`} />
+              ))
+            ) : productList && productList.length > 0 ? (
               productList.map((productItem) => (
                 <ShoppingProductTile
                   product={productItem}
@@ -223,7 +230,11 @@ const Listing = () => {
                   handleGetProductDetails={handleGetProductDetails}
                   handleAddToCart={handleAddToCart} />
               ))
-            ) : null
+            ) : (
+              <div className="col-span-full text-center text-muted-foreground py-8">
+                No products found
+              </div>
+            )
           }
         </div>
 

@@ -13,6 +13,7 @@ import { setProductDetails } from '@/store/shop/product-slice'
 import StarRatingComponent from '@/components/CommonCompo/StarRating'
 import { Label } from '@/components/ui/label'
 import { addReview, getReviews } from '@/store/shop/review-slice'
+import LazyImage from '@/components/CommonCompo/LazyImage'
 
 const ProductDetails = ({ open, setOpen, productDetails }) => {
 
@@ -137,10 +138,12 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
                     <div className='p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6'>
                         {/* Product Image */}
                         <div className="w-full">
-                            <img
+                            <LazyImage
                                 src={productDetails?.image}
-                                alt={productDetails?.title}
+                                alt={productDetails?.title || 'Product image'}
                                 className='w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[400px] object-cover rounded-lg'
+                                loading="eager"
+                                decoding="async"
                             />
                         </div>
 
