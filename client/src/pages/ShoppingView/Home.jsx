@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import bannerOne from "../../assets/banner-1.webp";
 import bannerTwo from "../../assets/banner-2.webp";
 import bannerThree from "../../assets/banner-3.webp";
@@ -67,11 +67,12 @@ const Home = () => {
     navigate('/shop/listing');
   }
 
-  function handleGetProductDetails(getCurrentProductId) {
+  // Memoize handlers to prevent unnecessary re-renders
+  const handleGetProductDetails = useCallback((getCurrentProductId) => {
     dispatch(fetchProductDetails(getCurrentProductId));
-  }
+  }, [dispatch]);
 
-  function handleAddtoCart(getCurrentProductId) {
+  const handleAddtoCart = useCallback((getCurrentProductId) => {
     dispatch(
       addToCart({
         userId: user?.id,
@@ -84,7 +85,7 @@ const Home = () => {
         toast.success("Product is added to cart");
       }
     });
-  }
+  }, [user?.id, dispatch]);
   // console.log(productList)
   return (
     <div className='flex flex-col min-h-screen'>
@@ -158,11 +159,13 @@ const Home = () => {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {productList && productList.length > 0
-              ? productList.map((productItem) => (
+              ? productList.map((productItem, index) => (
                 <ShoppingProductTile
+                  key={productItem._id}
                   handleGetProductDetails={handleGetProductDetails}
                   product={productItem}
                   handleAddToCart={handleAddtoCart}
+                  index={index}
                 />
               ))
               : <div className='text-center text-gray-500'>

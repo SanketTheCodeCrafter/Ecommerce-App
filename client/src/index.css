@@ -145,3 +145,28 @@
 .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: oklch(0.708 0 0);
 }
+
+/* Performance optimizations for smooth scrolling */
+@layer utilities {
+  .will-change-transform {
+    will-change: transform;
+  }
+  
+  /* Optimize image rendering */
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  
+  /* Smooth scrolling for main containers */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* GPU acceleration for product cards */
+  [class*="grid"] {
+    contain: layout style paint;
+  }
+}

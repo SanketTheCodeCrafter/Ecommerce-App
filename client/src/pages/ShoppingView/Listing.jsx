@@ -6,7 +6,7 @@ import { sortOptions } from '@/config/registerFormControls'
 import { fetchAllFilteredProducts, fetchProductDetails } from '@/store/shop/product-slice'
 import { DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
 import { ArrowUpDownIcon, ParkingMeter } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 import ProductDetails from './ProductDetails'
@@ -74,12 +74,12 @@ const Listing = () => {
     sessionStorage.setItem("filter", JSON.stringify(cpyFilter));
   }
 
-  function handleGetProductDetails(productId) {
-    console.log(productId, "productId")
+  // Memoize handlers to prevent unnecessary re-renders
+  const handleGetProductDetails = useCallback((productId) => {
     dispatch(fetchProductDetails(productId))
-  }
+  }, [dispatch]);
 
-  function handleAddToCart(getCurrentProductId, getTotalStock){
+  const handleAddToCart = useCallback((getCurrentProductId, getTotalStock) => {
     const getCartItems = cartItemsArray;
 
     if(getCartItems.length){
@@ -111,7 +111,7 @@ const Listing = () => {
         }
       }
     })
-  }
+  }, [cartItemsArray, user?.id, dispatch]);
 
 
 
@@ -170,7 +170,7 @@ const Listing = () => {
   
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 p-3 md:p-4 bg-muted/30">
+    <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 p-3 md:p-4 bg-muted/30" style={{ contain: 'layout style paint' }}>
       <Filter filter={filter} handleFilter={handleFilter} />
       <div className="bg-background w-full rounded-md shadow border border-muted/40">
         <div className="p-3 border-b border-muted/30 flex items-center justify-between">
@@ -216,10 +216,11 @@ const Listing = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
           {
             productList && productList.length > 0 ? (
-              productList.map((productItem) => (
+              productList.map((productItem, index) => (
                 <ShoppingProductTile
                   product={productItem}
                   key={productItem._id}
+                  index={index}
                   handleGetProductDetails={handleGetProductDetails}
                   handleAddToCart={handleAddToCart} />
               ))

@@ -141,6 +141,8 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
                                 src={productDetails?.image}
                                 alt={productDetails?.title}
                                 className='w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[400px] object-cover rounded-lg'
+                                loading="eager"
+                                decoding="async"
                             />
                         </div>
 
