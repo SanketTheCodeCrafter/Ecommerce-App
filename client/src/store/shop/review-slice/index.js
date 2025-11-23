@@ -37,24 +37,39 @@ export const getReviews = createAsyncThunk(
     }
 );
 
-const reviewSlie = createSlice({
+const reviewSlice = createSlice({
     name: 'reviewSlice',
     initialState,
     reducers: {},
     extraReducers: (builder) => {
         builder
+            // getReviews cases
             .addCase(getReviews.pending, (state) => {
                 state.isLoading = true;
             })
             .addCase(getReviews.fulfilled, (state, action) => {
-                state.isLoading = false,
-                    state.reviews = action.payload.data;
+                state.isLoading = false;
+                state.reviews = action.payload?.data || [];
             })
             .addCase(getReviews.rejected, (state, action) => {
-                state.isLoading = false,
-                    state.reviews = [];
+                state.isLoading = false;
+                state.reviews = [];
+            })
+            // addReview cases
+            .addCase(addReview.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(addReview.fulfilled, (state, action) => {
+                state.isLoading = false;
+                // Optionally add the new review to the list immediately
+                if (action.payload?.data) {
+                    state.reviews = [...state.reviews, action.payload.data];
+                }
+            })
+            .addCase(addReview.rejected, (state, action) => {
+                state.isLoading = false;
             })
     }
 })
 
-export default reviewSlie.reducer;
+export default reviewSlice.reducer;
