@@ -1,8 +1,8 @@
 import Form from '@/components/CommonCompo/Form';
 import { registerFormControls } from '@/config/registerFormControls';
 import { registerUser } from '@/store/auth-slice';
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux';
+import React, { useState, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -16,11 +16,24 @@ const initialState = {
 
 const AuthRegister = () => {
   const [formData, setFormData] = useState(initialState);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { isLoading } = useSelector((state) => state.auth);
 
   function onSubmit(e) {
     e.preventDefault();
+
+    // Prevent duplicate submissions using ref (immediate check)
+    if (isSubmittingRef.current || isLoading) {
+      return;
+    }
+
+    // Set both state and ref to prevent duplicates
+    isSubmittingRef.current = true;
+    setIsSubmitting(true);
+
     dispatch(registerUser(formData))
       .unwrap()
       .then((response) => {
@@ -34,9 +47,16 @@ const AuthRegister = () => {
       .catch((error) => {
         toast.error(error?.message || 'Registration failed');
         console.error('Registration failed:', error);
+      })
+      .finally(() => {
+        // Reset submission state after request completes
+        isSubmittingRef.current = false;
+        setIsSubmitting(false);
       });
   }
 
+  // Button is disabled only when form fields are empty
+  const isButtonDisabled = !formData.userName || !formData.email || !formData.password;
 
   return (
     <div className='mx-auto w-full max-w-md space-y-6'>
@@ -59,6 +79,8 @@ const AuthRegister = () => {
         formData={formData}
         setFormData={setFormData}
         onSubmit={onSubmit}
+        isBtnDisabled={isButtonDisabled}
+        isLoading={isSubmitting}
       />
     </div>
   )
