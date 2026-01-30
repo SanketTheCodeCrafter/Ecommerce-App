@@ -12,6 +12,7 @@ const initialState = {
   userName: '',
   email: '',
   password: '',
+  confirmPassword: '',
 }
 
 const AuthRegister = () => {
@@ -24,6 +25,12 @@ const AuthRegister = () => {
 
   function onSubmit(e) {
     e.preventDefault();
+
+    // Check if passwords match
+    if (formData.password !== formData.confirmPassword) {
+      toast.error('Passwords do not match!');
+      return;
+    }
 
     // Prevent duplicate submissions using ref (immediate check)
     if (isSubmittingRef.current || isLoading) {
@@ -56,7 +63,7 @@ const AuthRegister = () => {
   }
 
   // Button is disabled only when form fields are empty
-  const isButtonDisabled = !formData.userName || !formData.email || !formData.password;
+  const isButtonDisabled = !formData.userName || !formData.email || !formData.password || !formData.confirmPassword;
 
   return (
     <div className='mx-auto w-full max-w-md space-y-6'>

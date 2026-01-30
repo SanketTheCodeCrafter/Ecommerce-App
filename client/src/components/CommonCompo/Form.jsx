@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 import { Button } from '../ui/button';
+import { Eye, EyeOff } from 'lucide-react';
 
 const Form = ({
     formControls,
@@ -14,6 +15,15 @@ const Form = ({
     isBtnDisabled,
     isLoading = false,
 }) => {
+    // Track password visibility for each password field
+    const [passwordVisibility, setPasswordVisibility] = useState({});
+
+    const togglePasswordVisibility = (fieldName) => {
+        setPasswordVisibility(prev => ({
+            ...prev,
+            [fieldName]: !prev[fieldName]
+        }));
+    };
 
     function renderInputsByComponentType(getControlItem) {
         let element = null;
@@ -22,21 +32,56 @@ const Form = ({
 
         switch (getControlItem.componentType) {
             case "input":
-                element = (
-                    <Input
-                        name={getControlItem.name}
-                        placeholder={getControlItem.placeholder}
-                        id={getControlItem.name}
-                        value={value}
-                        type={getControlItem.type}
-                        onChange={(e) => {
-                            setFormData({
-                                ...formData,
-                                [getControlItem.name]: e.target.value,
-                            })
-                        }}
-                    />
-                )
+                // Check if this is a password field
+                if (getControlItem.type === "password") {
+                    const isVisible = passwordVisibility[getControlItem.name];
+                    element = (
+                        <div className="relative">
+                            <Input
+                                name={getControlItem.name}
+                                placeholder={getControlItem.placeholder}
+                                id={getControlItem.name}
+                                value={value}
+                                type={isVisible ? "text" : "password"}
+                                onChange={(e) => {
+                                    setFormData({
+                                        ...formData,
+                                        [getControlItem.name]: e.target.value,
+                                    })
+                                }}
+                                className="pr-10"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => togglePasswordVisibility(getControlItem.name)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                                tabIndex={-1}
+                            >
+                                {isVisible ? (
+                                    <EyeOff className="h-4 w-4" />
+                                ) : (
+                                    <Eye className="h-4 w-4" />
+                                )}
+                            </button>
+                        </div>
+                    )
+                } else {
+                    element = (
+                        <Input
+                            name={getControlItem.name}
+                            placeholder={getControlItem.placeholder}
+                            id={getControlItem.name}
+                            value={value}
+                            type={getControlItem.type}
+                            onChange={(e) => {
+                                setFormData({
+                                    ...formData,
+                                    [getControlItem.name]: e.target.value,
+                                })
+                            }}
+                        />
+                    )
+                }
                 break;
 
             case "select":
