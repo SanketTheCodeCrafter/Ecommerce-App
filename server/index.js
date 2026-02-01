@@ -2,8 +2,10 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import session from 'express-session';
 import dotenv from 'dotenv';
 import 'dotenv/config';
+import passport from './config/passport.js';
 import AuthRoutes from './routes/AuthRoutes.js';
 import adminProductsRouter from './routes/admin/products-routes.js'
 import adminOrderRouter from './routes/admin/order-routes.js';
@@ -51,6 +53,21 @@ app.use(
 
 app.use(cookieParser());
 app.use(express.json());
+
+// Session configuration for Passport
+app.use(session({
+    secret: process.env.JWT_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+}));
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/api/auth', AuthRoutes);
 
