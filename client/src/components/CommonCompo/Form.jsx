@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 import { Button } from '../ui/button';
+import { Eye, EyeOff } from 'lucide-react';
 
 const Form = ({
     formControls,
@@ -12,7 +13,17 @@ const Form = ({
     onSubmit,
     buttonText,
     isBtnDisabled,
+    isLoading = false,
 }) => {
+    // Track password visibility for each password field
+    const [passwordVisibility, setPasswordVisibility] = useState({});
+
+    const togglePasswordVisibility = (fieldName) => {
+        setPasswordVisibility(prev => ({
+            ...prev,
+            [fieldName]: !prev[fieldName]
+        }));
+    };
 
     function renderInputsByComponentType(getControlItem) {
         let element = null;
@@ -21,21 +32,56 @@ const Form = ({
 
         switch (getControlItem.componentType) {
             case "input":
-                element = (
-                    <Input
-                        name={getControlItem.name}
-                        placeholder={getControlItem.placeholder}
-                        id={getControlItem.name}
-                        value={value}
-                        type={getControlItem.type}
-                        onChange={(e) => {
-                            setFormData({
-                                ...formData,
-                                [getControlItem.name]: e.target.value,
-                            })
-                        }}
-                    />
-                )
+                // Check if this is a password field
+                if (getControlItem.type === "password") {
+                    const isVisible = passwordVisibility[getControlItem.name];
+                    element = (
+                        <div className="relative">
+                            <Input
+                                name={getControlItem.name}
+                                placeholder={getControlItem.placeholder}
+                                id={getControlItem.name}
+                                value={value}
+                                type={isVisible ? "text" : "password"}
+                                onChange={(e) => {
+                                    setFormData({
+                                        ...formData,
+                                        [getControlItem.name]: e.target.value,
+                                    })
+                                }}
+                                className="pr-10"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => togglePasswordVisibility(getControlItem.name)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                                tabIndex={-1}
+                            >
+                                {isVisible ? (
+                                    <EyeOff className="h-4 w-4" />
+                                ) : (
+                                    <Eye className="h-4 w-4" />
+                                )}
+                            </button>
+                        </div>
+                    )
+                } else {
+                    element = (
+                        <Input
+                            name={getControlItem.name}
+                            placeholder={getControlItem.placeholder}
+                            id={getControlItem.name}
+                            value={value}
+                            type={getControlItem.type}
+                            onChange={(e) => {
+                                setFormData({
+                                    ...formData,
+                                    [getControlItem.name]: e.target.value,
+                                })
+                            }}
+                        />
+                    )
+                }
                 break;
 
             case "select":
@@ -117,7 +163,13 @@ const Form = ({
                 ))}
             </div>
 
-            <Button disabled={isBtnDisabled} type="submit" className={"mt-2 w-full"}>
+            <Button disabled={isBtnDisabled || isLoading} type="submit" className={"mt-2 w-full"}>
+                {isLoading && (
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                )}
                 {buttonText || "Submit"}
             </Button>
         </form>

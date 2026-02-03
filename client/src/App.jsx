@@ -3,6 +3,7 @@ import { Route } from "react-router-dom";
 import AuthLayout from "./components/Auth/AuthLayout";
 import AuthLogin from "./pages/Auth/AuthLogin";
 import AuthRegister from "./pages/Auth/AuthRegister";
+import GoogleAuthSuccess from "./pages/Auth/GoogleAuthSuccess";
 import AdminLayout from "./components/AdminView/AdminLayout";
 import Features from "./pages/AdminView/Features";
 import AdminOrders from './pages/AdminView/Order';
@@ -24,19 +25,19 @@ import Search from "./pages/ShoppingView/Search";
 
 
 function App() {
-  const {isAuthenticated, user, isLoading} = useSelector((state) => state.auth);
+  const { isAuthenticated, user, isLoading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const location = useLocation();
   const isPublicRoute = location.pathname.startsWith('/auth') || location.pathname === '/' || location.pathname === '/unauth-page';
 
-  useEffect(()=>{
+  useEffect(() => {
     // Run auth check in background - don't block rendering
     dispatch(checkAuth());
   }, [dispatch])
 
   // Only show loading spinner for protected routes that require auth check
   // Public routes (auth pages) should render immediately
-  if(isLoading && !isPublicRoute){
+  if (isLoading && !isPublicRoute) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500"></div>
@@ -48,7 +49,7 @@ function App() {
     <div className="flex flex-col overflow-hidden bg-white">
       <Routes>
         <Route path="/" element={<Navigate to="/auth/register" replace />} />
-        
+
         {/* Auth routes */}
         <Route path='/auth' element={<CheckAuth isAuthenticated={isAuthenticated} user={user} >
           <AuthLayout />
@@ -56,6 +57,9 @@ function App() {
           <Route path="login" element={<AuthLogin />} />
           <Route path="register" element={<AuthRegister />} />
         </Route>
+
+        {/* Google OAuth success route - outside CheckAuth to handle redirect */}
+        <Route path="/auth/google/success" element={<GoogleAuthSuccess />} />
 
         {/* Admin routes */}
         <Route path="/admin" element={<CheckAuth isAuthenticated={isAuthenticated} user={user} >
@@ -66,10 +70,10 @@ function App() {
           <Route path="orders" element={<AdminOrders />} />
           <Route path="products" element={<Products />} />
         </Route>
-        
+
         {/* Backward compatibility: redirect old dashboard path */}
         <Route path="/admin/dashboard" element={<Navigate to="/admin/products" replace />} />
-        
+
         {/* Shop routes */}
         <Route path="/shop" element={<CheckAuth isAuthenticated={isAuthenticated} user={user} >
           <ShopLayout />
@@ -80,13 +84,13 @@ function App() {
           <Route path="listing" element={<Listing />} />
           <Route path="paypal-return" element={<PaypalReturn />} />
           <Route path="payment-success" element={<PaymentSuccess />} />
-          <Route path='search' element={<Search/>} />
+          <Route path='search' element={<Search />} />
         </Route>
 
         {/* Standalone PayPal routes (outside of shop layout) */}
         <Route path="/paypal-return" element={<PaypalReturn />} />
         <Route path="/paypal-cancel" element={<Navigate to="/shop/checkout" replace />} />
-        
+
         <Route path="*" element={<NotFound />}></Route>
         <Route path="/unauth-page" element={<UnauthPage />}></Route>
       </Routes>

@@ -8,14 +8,14 @@ const initialState = {
 }
 
 export const registerUser = createAsyncThunk('/auth/register',
-    async (formData)=>{
+    async (formData) => {
         const response = await apiClient.post('/api/auth/register', formData);
         return response.data;
     }
 )
 
 export const loginUser = createAsyncThunk('/auth/login',
-    async (formData)=>{
+    async (formData) => {
         const response = await apiClient.post('/api/auth/login', formData);
         return response.data;
     }
@@ -29,7 +29,7 @@ export const logOut = createAsyncThunk('/auth/logout',
 )
 
 export const checkAuth = createAsyncThunk('/auth/check-auth',
-    async (_, { rejectWithValue })=>{
+    async (_, { rejectWithValue }) => {
         try {
             const response = await apiClient.get('/api/auth/check-auth', {
                 headers: {
@@ -44,70 +44,75 @@ export const checkAuth = createAsyncThunk('/auth/check-auth',
     }
 )
 
-const authSlice= createSlice({
+const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        setUser: (state, action)=>{
+        setUser: (state, action) => {
 
-        }
+        },
+        setGoogleAuthUser: (state, action) => {
+            state.isAuthenticated = true;
+            state.user = action.payload;
+            state.isLoading = false;
+        },
     },
-    extraReducers: (builder)=>{
+    extraReducers: (builder) => {
         builder
-            .addCase(registerUser.pending, (state)=>{
-                state.isLoading=true;
+            .addCase(registerUser.pending, (state) => {
+                state.isLoading = true;
             })
-            .addCase(registerUser.fulfilled, (state, action)=>{
-                state.isLoading=false;
-                state.isAuthenticated= false;
+            .addCase(registerUser.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isAuthenticated = false;
                 state.user = null;
             })
-            .addCase(registerUser.rejected, (state, action)=>{
-                state.isLoading=false;
-                state.isAuthenticated=false;
-                state.user=null;
-            })
-            .addCase(loginUser.pending, (state)=>{
-                state.isLoading=true;
-            })
-            .addCase(loginUser.fulfilled, (state, action)=>{
-                state.isLoading=false;
-                state.isAuthenticated= action.payload.success;
-                state.user = action.payload.success ? action.payload.user : null;
-            })
-            .addCase(loginUser.rejected, (state, action)=>{
-                state.isLoading=false;
-                state.isAuthenticated=false;
-                state.user=null;
-            })
-            .addCase(checkAuth.pending, (state)=>{
-                state.isLoading=true;
-            })
-            .addCase(checkAuth.fulfilled, (state, action)=>{
-                state.isLoading=false;
-                state.isAuthenticated= action.payload.success;
-                state.user = action.payload.success ? action.payload.user : null;
-            })
-            .addCase(checkAuth.rejected, (state, action)=>{
-                state.isLoading=false;
-                state.isAuthenticated=false;
-                state.user=null;
-            })
-            .addCase(logOut.pending, (state)=>{
-                state.isLoading=true;
-            })
-            .addCase(logOut.fulfilled, (state, action)=>{
-                state.isLoading=false;
-                state.isAuthenticated= false;
+            .addCase(registerUser.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isAuthenticated = false;
                 state.user = null;
             })
-            .addCase(logOut.rejected, (state, action)=>{
-                state.isLoading=false;
-                state.isAuthenticated=false;
-                state.user=null;
+            .addCase(loginUser.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(loginUser.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isAuthenticated = action.payload.success;
+                state.user = action.payload.success ? action.payload.user : null;
+            })
+            .addCase(loginUser.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isAuthenticated = false;
+                state.user = null;
+            })
+            .addCase(checkAuth.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(checkAuth.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isAuthenticated = action.payload.success;
+                state.user = action.payload.success ? action.payload.user : null;
+            })
+            .addCase(checkAuth.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isAuthenticated = false;
+                state.user = null;
+            })
+            .addCase(logOut.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(logOut.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isAuthenticated = false;
+                state.user = null;
+            })
+            .addCase(logOut.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isAuthenticated = false;
+                state.user = null;
             })
     }
 })
 
-export const { setUser} = authSlice.actions;
+export const { setUser, setGoogleAuthUser } = authSlice.actions;
 export default authSlice.reducer;

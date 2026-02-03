@@ -77,18 +77,18 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
         setRating(newRating);
     }
 
-    function handleAddReview(){
-        if(!user?.id){
+    function handleAddReview() {
+        if (!user?.id) {
             toast.error('Please login to add a review!');
             return;
         }
 
-        if(rating === 0){
+        if (rating === 0) {
             toast.error('Please select a rating!');
             return;
         }
 
-        if(reviewMsg.trim() === ''){
+        if (reviewMsg.trim() === '') {
             toast.error('Please write a review message!');
             return;
         }
@@ -99,18 +99,18 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
             userName: user?.userName,
             reviewMessage: reviewMsg,
             reviewValue: rating,
-        })).then((data)=>{
+        })).then((data) => {
             const success = data?.payload?.success;
             const message = data?.payload?.message;
-            if(success){
+            if (success) {
                 setRating(0);
                 setReviewMsg('');
                 dispatch(getReviews(productDetails?._id));
                 toast.success('Review added successfully!');
-            }else{
-                if(message){
+            } else {
+                if (message) {
                     toast.error(message);
-                }else{
+                } else {
                     toast.error('Something went wrong!');
                 }
             }
@@ -137,11 +137,11 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
                 <div className='flex-1 overflow-y-auto overscroll-contain'>
                     <div className='p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6'>
                         {/* Product Image */}
-                        <div className="w-full">
+                        <div className="w-full bg-gray-50 rounded-lg">
                             <LazyImage
                                 src={productDetails?.image}
                                 alt={productDetails?.title || 'Product image'}
-                                className='w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[400px] object-cover rounded-lg'
+                                className='w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[400px] object-contain rounded-lg'
                                 loading="eager"
                                 decoding="async"
                             />
@@ -192,7 +192,7 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
                         {/* Reviews Section */}
                         <div className="space-y-4">
                             <h3 className="text-base sm:text-lg font-semibold">Customer Reviews</h3>
-                            
+
                             {/* Existing Reviews */}
                             <div className="space-y-3 max-h-[250px] sm:max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                                 {reviews.length === 0 ? (

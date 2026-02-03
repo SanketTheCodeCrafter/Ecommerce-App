@@ -27,6 +27,11 @@ export const createOrder = async (req, res) => {
             });
         }
 
+        // Determine the frontend URL based on environment
+        const frontendUrl = process.env.NODE_ENV === 'production'
+            ? process.env.FRONTEND_URL_PROD
+            : process.env.FRONTEND_URL_DEV;
+
         // Create PayPal order
         const request = new checkoutNodeJssdk.orders.OrdersCreateRequest();
         request.prefer("return=representation");
@@ -59,8 +64,8 @@ export const createOrder = async (req, res) => {
                 }))
             }],
             application_context: {
-                return_url: process.env.FRONTEND_URL + "/paypal-return",
-                cancel_url: process.env.FRONTEND_URL + "/paypal-cancel"
+                return_url: frontendUrl + "/paypal-return",
+                cancel_url: frontendUrl + "/paypal-cancel"
             }
         });
 
@@ -107,6 +112,15 @@ export const capturePayment = async (req, res) => {
     try {
         const { paymentId, payerId, orderId } = req.body;
 
+        console.log('Capture payment request:', { paymentId, payerId, orderId });
+
+        if (!paymentId || !payerId || !orderId) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing required fields: paymentId, payerId, or orderId",
+            });
+        }
+
         let order = await Order.findById(orderId);
 
         if (!order) {
@@ -116,11 +130,64 @@ export const capturePayment = async (req, res) => {
             });
         }
 
+        // Check if order is already paid (prevents duplicate capture attempts)
+        if (order.paymentStatus === 'Paid') {
+            console.log('Order already paid, skipping capture:', orderId);
+            return res.status(200).json({
+                success: true,
+                message: "Order already confirmed",
+                data: order,
+            });
+        }
+
         // Capture the PayPal order
         const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(paymentId);
         request.prefer("return=representation");
 
-        const capture = await paypalClient.execute(request);
+        let capture;
+        try {
+            capture = await paypalClient.execute(request);
+            console.log('PayPal capture result:', capture.result.status);
+        } catch (paypalError) {
+            console.error('PayPal capture error:', paypalError.message);
+
+            // Check if the order was already captured (common with redirects)
+            if (paypalError.statusCode === 422 ||
+                paypalError.message?.includes('ORDER_ALREADY_CAPTURED') ||
+                paypalError.message?.includes('UNPROCESSABLE_ENTITY')) {
+
+                // Payment was already captured, update order status
+                order.paymentStatus = 'Paid';
+                order.orderStatus = 'Confirmed';
+                order.paymentId = paymentId;
+                order.payerId = payerId;
+
+                // Update stock for cart items
+                for (let item of order.cartItems) {
+                    let product = await Product.findById(item.productId);
+                    if (product && product.totalStock >= item.quantity) {
+                        product.totalStock -= item.quantity;
+                        await product.save();
+                    }
+                }
+
+                const getCartId = order.cartId;
+                await Cart.findByIdAndDelete(getCartId);
+                await order.save();
+
+                return res.status(200).json({
+                    success: true,
+                    message: "Order confirmed (payment was already captured)",
+                    data: order,
+                });
+            }
+
+            // For other PayPal errors, return error response
+            return res.status(500).json({
+                success: false,
+                message: `PayPal capture error: ${paypalError.message}`,
+            });
+        }
 
         if (capture.result.status === 'COMPLETED') {
             order.paymentStatus = 'Paid';
@@ -134,7 +201,7 @@ export const capturePayment = async (req, res) => {
                 if (!product) {
                     return res.status(404).json({
                         success: false,
-                        message: `Not enough stock for this product ${product.title}`,
+                        message: `Product not found: ${item.productId}`,
                     })
                 }
 
@@ -156,14 +223,14 @@ export const capturePayment = async (req, res) => {
         } else {
             res.status(400).json({
                 success: false,
-                message: "Payment capture failed",
+                message: `Payment capture status: ${capture.result.status}`,
             });
         }
     } catch (error) {
-        console.error("Error capturing payment:", error);
+        console.error("Error capturing payment:", error.message, error.stack);
         res.status(500).json({
             success: false,
-            message: "Internal server error while capturing payment",
+            message: `Internal server error: ${error.message}`,
         })
     }
 }
