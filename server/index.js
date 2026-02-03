@@ -35,7 +35,7 @@ app.use(
     cors({
         origin: [
             'http://localhost:5173',
-            process.env.FRONTEND_URL,  // Production frontend URL
+            process.env.FRONTEND_URL_PROD,  // Production frontend URL
         ].filter(Boolean),
         methods: ['GET', 'POST', 'DELETE', 'PUT'],
         allowedHeaders: [
